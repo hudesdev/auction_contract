@@ -1,0 +1,23 @@
+# ==============
+# = Roles
+# ==============
+yarn ts-node-user init -e devnet -r https://api.devnet.solana.com -k ../keys/user-Shit.json
+
+
+yarn ts-node-user create_auction -mint *address -s 10 -d 10 -e devnet -r https://api.devnet.solana.com -k ../keys/mine.json
+for example: yarn ts-node-user create_auction -mint H8uNPTpKoaXJwpmN1D8DMeX6xVnLHXUNTYtEn9qHmN1W -s 10 -d 10 -e devnet -r https://api.devnet.solana.com -k ../keys/mine.json
+
+yarn ts-node-user cancel_auction -a *address -e devnet -r https://api.devnet.solana.com -k ../keys/user-Shit.json
+
+yarn ts-node-updater place_bid -a *address -b 20 -e devnet -r https://api.devnet.solana.com -k ../keys/updater-Crap.json
+yarn ts-node-user place_bid -a *address -b 20 -e devnet -r https://api.devnet.solana.com -k ../keys/user-Shit.json
+yarn ts-node-admin place_bid -a *address -b 20 -e devnet -r https://api.devnet.solana.com -k ../keys/admin-Beer.json
+
+
+yarn ts-node-user claim_auction -a *address -e devnet -r https://api.devnet.solana.com -k ../keys/user-Shit.json
+
+yarn ts-node-user get_auction_info -a *address -e devnet -r https://api.devnet.solana.com -k ../keys/user-Shit.json
+
+
+*khticNuzyvcM8EmpuDjZFBowFA8JKqC7JSH57FZGdEJ => address of currnet auction room
+keypair file name must be replaced.

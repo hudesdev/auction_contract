@@ -1,0 +1,11 @@
+c:\Users\pc\Documents\auction_duplicate_finish\target\debug\deps\libcc-505d6822f477a9d1.rmeta: C:\Users\pc\.cargo\registry\src\index.crates.io-6f17d22bba15001f\cc-1.0.79\src\lib.rs C:\Users\pc\.cargo\registry\src\index.crates.io-6f17d22bba15001f\cc-1.0.79\src\registry.rs C:\Users\pc\.cargo\registry\src\index.crates.io-6f17d22bba15001f\cc-1.0.79\src\winapi.rs C:\Users\pc\.cargo\registry\src\index.crates.io-6f17d22bba15001f\cc-1.0.79\src\com.rs C:\Users\pc\.cargo\registry\src\index.crates.io-6f17d22bba15001f\cc-1.0.79\src\setup_config.rs C:\Users\pc\.cargo\registry\src\index.crates.io-6f17d22bba15001f\cc-1.0.79\src\vs_instances.rs C:\Users\pc\.cargo\registry\src\index.crates.io-6f17d22bba15001f\cc-1.0.79\src\windows_registry.rs
+
+c:\Users\pc\Documents\auction_duplicate_finish\target\debug\deps\cc-505d6822f477a9d1.d: C:\Users\pc\.cargo\registry\src\index.crates.io-6f17d22bba15001f\cc-1.0.79\src\lib.rs C:\Users\pc\.cargo\registry\src\index.crates.io-6f17d22bba15001f\cc-1.0.79\src\registry.rs C:\Users\pc\.cargo\registry\src\index.crates.io-6f17d22bba15001f\cc-1.0.79\src\winapi.rs C:\Users\pc\.cargo\registry\src\index.crates.io-6f17d22bba15001f\cc-1.0.79\src\com.rs C:\Users\pc\.cargo\registry\src\index.crates.io-6f17d22bba15001f\cc-1.0.79\src\setup_config.rs C:\Users\pc\.cargo\registry\src\index.crates.io-6f17d22bba15001f\cc-1.0.79\src\vs_instances.rs C:\Users\pc\.cargo\registry\src\index.crates.io-6f17d22bba15001f\cc-1.0.79\src\windows_registry.rs
+
+C:\Users\pc\.cargo\registry\src\index.crates.io-6f17d22bba15001f\cc-1.0.79\src\lib.rs:
+C:\Users\pc\.cargo\registry\src\index.crates.io-6f17d22bba15001f\cc-1.0.79\src\registry.rs:
+C:\Users\pc\.cargo\registry\src\index.crates.io-6f17d22bba15001f\cc-1.0.79\src\winapi.rs:
+C:\Users\pc\.cargo\registry\src\index.crates.io-6f17d22bba15001f\cc-1.0.79\src\com.rs:
+C:\Users\pc\.cargo\registry\src\index.crates.io-6f17d22bba15001f\cc-1.0.79\src\setup_config.rs:
+C:\Users\pc\.cargo\registry\src\index.crates.io-6f17d22bba15001f\cc-1.0.79\src\vs_instances.rs:
+C:\Users\pc\.cargo\registry\src\index.crates.io-6f17d22bba15001f\cc-1.0.79\src\windows_registry.rs:

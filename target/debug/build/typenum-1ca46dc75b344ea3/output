@@ -1,0 +1,3 @@
+cargo:rerun-if-changed=build/main.rs
+cargo:rustc-env=TYPENUM_BUILD_CONSTS=c:\Users\pc\Documents\auction_duplicate_finish\target\debug\build\typenum-1ca46dc75b344ea3\out\consts.rs
+cargo:rustc-env=TYPENUM_BUILD_OP=c:\Users\pc\Documents\auction_duplicate_finish\target\debug\build\typenum-1ca46dc75b344ea3\out\op.rs

@@ -1,0 +1,5 @@
+c:\Users\pc\Documents\auction_duplicate_finish\target\debug\deps\anchor_attribute_event-2cd9009dc41e0542.dll: C:\Users\pc\.cargo\registry\src\index.crates.io-6f17d22bba15001f\anchor-attribute-event-0.27.0\src\lib.rs
+
+c:\Users\pc\Documents\auction_duplicate_finish\target\debug\deps\anchor_attribute_event-2cd9009dc41e0542.d: C:\Users\pc\.cargo\registry\src\index.crates.io-6f17d22bba15001f\anchor-attribute-event-0.27.0\src\lib.rs
+
+C:\Users\pc\.cargo\registry\src\index.crates.io-6f17d22bba15001f\anchor-attribute-event-0.27.0\src\lib.rs:
