@@ -62,10 +62,11 @@ class TelegramBot:
         try:
             # Uzman seç
             expert_type = await self.expert_selector.select_expert(question)
+            logger.info(f"Selected expert: {expert_type}")
             
-            if expert_type == "spor":
+            if expert_type == "sports":
                 response = await self.sports_expert.get_response(question)
-            elif expert_type == "yemek":
+            elif expert_type == "food":
                 response = await self.food_expert.get_response(question)
             elif expert_type == "ai":
                 response = await self.ai_expert.get_response(question)
