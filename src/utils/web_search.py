@@ -1,55 +1,48 @@
-"""Web search utility"""
+"""Web search functionality using Tavily API"""
+import os
 import logging
 from typing import Optional
-import aiohttp
-from bs4 import BeautifulSoup
+from tavily import TavilyClient
 
 logger = logging.getLogger(__name__)
 
 class WebSearch:
     def __init__(self):
-        """Initialize web search"""
-        self.search_url = "https://www.google.com/search"
+        """Initialize WebSearch with Tavily API"""
+        self.client = TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
         
     async def search(self, query: str) -> Optional[str]:
-        """Search web for answer
+        """Search web using Tavily API
         
         Args:
             query (str): Search query
             
         Returns:
-            Optional[str]: Answer from web or None if not found
+            Optional[str]: Search result or None if not found
         """
         try:
-            # Format query
-            params = {
-                "q": query,
-                "hl": "tr",
-                "gl": "tr"
-            }
+            # Tavily API'yi kullanarak arama yap
+            response = self.client.search(
+                query=query,
+                search_depth="advanced",  # Detaylı arama
+                max_results=3,  # En alakalı 3 sonuç
+                language="tr"  # Türkçe sonuçlar
+            )
             
-            # Make request
-            async with aiohttp.ClientSession() as session:
-                async with session.get(self.search_url, params=params) as response:
-                    if response.status == 200:
-                        # Parse response
-                        html = await response.text()
-                        soup = BeautifulSoup(html, "html.parser")
-                        
-                        # Try to find answer in featured snippet
-                        if snippet := soup.find("div", {"class": "ILfuVd"}):
-                            return snippet.get_text()
-                            
-                        # Try to find answer in knowledge panel
-                        if panel := soup.find("div", {"class": "kno-rdesc"}):
-                            return panel.get_text()
-                            
-                        # Try to find answer in search results
-                        if results := soup.find_all("div", {"class": "BNeawe"}):
-                            return results[0].get_text()
-                            
-            return None
+            if not response or not response.get("results"):
+                logger.warning("No results found from Tavily search")
+                return None
+                
+            # Sonuçları birleştir
+            results = response["results"]
+            content = "\n\n".join([
+                f"Başlık: {result['title']}\n"
+                f"İçerik: {result['content']}"
+                for result in results
+            ])
+            
+            return content
             
         except Exception as e:
-            logger.error(f"Error searching web: {str(e)}", exc_info=True)
+            logger.error(f"Error in Tavily search: {str(e)}")
             return None 
