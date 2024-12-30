@@ -14,7 +14,7 @@ class ExpertBase:
         self.system_message = system_message or ""
         self.openai_client = OpenAIClient()
         
-    def get_response(self, message: str) -> Optional[str]:
+    async def get_response(self, message: str) -> Optional[str]:
         """Get response for the message
         
         Args:
@@ -24,7 +24,8 @@ class ExpertBase:
             Optional[str]: Response or None if no answer found
         """
         try:
-            return self.openai_client.get_completion(self.system_message, message)
+            response = await self.openai_client.get_completion(self.system_message, message)
+            return response
         except Exception as e:
             print(f"Error getting response: {str(e)}")
             return None 

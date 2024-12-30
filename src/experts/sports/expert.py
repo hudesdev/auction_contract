@@ -21,7 +21,7 @@ class SportsExpert(ExpertBase):
         )
         self.openai_client = OpenAIClient()
         
-    def get_response(self, question: str) -> Optional[str]:
+    async def get_response(self, question: str) -> Optional[str]:
         """Get response for sports related question
         
         Args:
@@ -38,7 +38,7 @@ class SportsExpert(ExpertBase):
                 return cached_response
                 
             # Generate response using OpenAI
-            response = self._generate_response(question)
+            response = await self._generate_response(question)
             
             # Cache the response
             if response:
@@ -50,28 +50,23 @@ class SportsExpert(ExpertBase):
             logger.error("Error getting sports response: %s", str(e))
             return None
             
-    def _generate_response(self, question: str) -> Optional[str]:
+    async def _generate_response(self, question: str) -> Optional[str]:
         """Generate response using OpenAI
         
         Args:
             question (str): User's question
             
         Returns:
-            Optional[str]: Generated response or None on error
+            Optional[str]: Generated response or None
         """
+        system_prompt = """Sen bir spor uzmanısın. 
+        Futbol, basketbol, voleybol ve diğer sporlar hakkında detaylı bilgi sahibisin.
+        Kullanıcının sorduğu spor ile ilgili soruları yanıtla.
+        Eğer soru sporla ilgili değilse, bunu belirt."""
+        
         try:
-            system_prompt = """Sen bir spor uzmanısın. Futbol, basketbol ve diğer sporlar hakkında detaylı bilgi sahibisin.
-            Soruları Türkçe olarak yanıtla ve mümkün olduğunca güncel ve doğru bilgiler ver.
-            
-            Önemli kurallar:
-            1. Sadece güncel ve doğruluğundan emin olduğun bilgileri ver
-            2. Eski veya güncel olmayan bilgileri verme (örn: takımdan ayrılmış oyuncular)
-            3. Emin olmadığın konularda "Bu konuda güncel bilgim yok" de
-            4. Özellikle transfer, piyasa değeri gibi konularda çok dikkatli ol
-            5. Mümkünse bilginin tarihini de belirt"""
-            
-            return self.openai_client.get_completion(system_prompt, question)
-            
+            response = await self.openai_client.get_completion(system_prompt, question)
+            return response
         except Exception as e:
-            logger.error("Error generating response: %s", str(e))
+            logger.error("Error generating sports response: %s", str(e))
             return None 

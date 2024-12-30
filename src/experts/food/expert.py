@@ -21,7 +21,7 @@ class FoodExpert(ExpertBase):
         )
         self.openai_client = OpenAIClient()
         
-    def get_response(self, question: str) -> Optional[str]:
+    async def get_response(self, question: str) -> Optional[str]:
         """Get response for food related question
         
         Args:
@@ -38,7 +38,7 @@ class FoodExpert(ExpertBase):
                 return cached_response
                 
             # Generate response using OpenAI
-            response = self._generate_response(question)
+            response = await self._generate_response(question)
             
             # Cache the response
             if response:
@@ -50,21 +50,23 @@ class FoodExpert(ExpertBase):
             logger.error("Error getting food response: %s", str(e))
             return None
             
-    def _generate_response(self, question: str) -> Optional[str]:
+    async def _generate_response(self, question: str) -> Optional[str]:
         """Generate response using OpenAI
         
         Args:
             question (str): User's question
             
         Returns:
-            Optional[str]: Generated response or None on error
+            Optional[str]: Generated response or None
         """
+        system_prompt = """Sen bir yemek ve mutfak uzmanısın.
+        Yemek tarifleri, mutfak kültürü, beslenme ve diyet konularında detaylı bilgi sahibisin.
+        Kullanıcının sorduğu yemek ile ilgili soruları yanıtla.
+        Eğer soru yemek ile ilgili değilse, bunu belirt."""
+        
         try:
-            system_prompt = """Sen bir yemek ve beslenme uzmanısın. Yemek tarifleri, restoran önerileri ve sağlıklı beslenme konularında detaylı bilgi sahibisin.
-            Soruları Türkçe olarak yanıtla ve mümkün olduğunca pratik ve uygulanabilir öneriler ver."""
-            
-            return self.openai_client.get_completion(system_prompt, question)
-            
+            response = await self.openai_client.get_completion(system_prompt, question)
+            return response
         except Exception as e:
-            logger.error("Error generating response: %s", str(e))
+            logger.error("Error generating food response: %s", str(e))
             return None 
