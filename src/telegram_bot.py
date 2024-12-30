@@ -59,7 +59,7 @@ class TelegramBot:
         
         try:
             # Uzman seç
-            expert_type = self.expert_selector.select_expert(question)
+            expert_type = await self.expert_selector.select_expert(question)
             
             if expert_type == "spor":
                 response = await self.sports_expert.get_response(question)

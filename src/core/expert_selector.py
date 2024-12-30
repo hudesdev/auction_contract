@@ -12,7 +12,7 @@ class ExpertSelector:
         self.cache = Cache(enabled=True, max_size=1000, ttl=3600)
         self.openai_client = OpenAIClient()
         
-    def select_expert(self, question: str) -> Optional[str]:
+    async def select_expert(self, question: str) -> Optional[str]:
         """Select appropriate expert based on question
         
         Args:
@@ -37,21 +37,22 @@ class ExpertSelector:
             user_message = f"Soru: {question}\n\nBu soru hangi uzmana yönlendirilmeli?"
             
             try:
-                response = self.openai_client.get_completion(system_prompt, user_message)
-                result = json.loads(response)
-                
-                if result["confidence"] >= 0.7:  # Minimum güven skoru
-                    expert_type = result["expert"]
-                    # Cache the result
-                    self.cache.set(question, expert_type)
-                    return expert_type
+                response = await self.openai_client.get_completion(system_prompt, user_message)
+                if response:
+                    result = json.loads(response)
                     
+                    if result["confidence"] >= 0.7:  # Minimum güven skoru
+                        expert_type = result["expert"]
+                        # Cache the result
+                        self.cache.set(question, expert_type)
+                        return expert_type
+                        
                 return None
                 
-            except Exception as e:
-                logger.error("Error classifying question: %s", str(e))
+            except json.JSONDecodeError as e:
+                logger.error(f"Error parsing OpenAI response: {str(e)}")
                 return None
                 
         except Exception as e:
-            logger.error("Error selecting expert: %s", str(e))
+            logger.error(f"Error classifying question: {str(e)}")
             return None 
