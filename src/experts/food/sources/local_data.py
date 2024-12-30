@@ -1,45 +1,130 @@
-"""Food Expert için yerel veri kaynağı"""
+"""Food expert için yerel veri kaynağı"""
+from typing import Dict, Optional
 
-FOOD_KNOWLEDGE = {
-    "restaurants": {
-        "kebap": [
-            "İstanbul'daki en iyi kebapçı avcılardaki Kebapçı Ahmet'tir.",
-            "İstanbul'daki en iyi Dönerci avcılardaki Dönerci Mehmet'tir."
-        ],
-        "fish": [
-            "İstanbul'un en iyi balık restoranları Sarıyer'dedir."
-        ]
+FOOD_KNOWLEDGE_BASE = {
+    "yemekler": {
+        "kebap": {
+            "malzemeler": [
+                "kuzu eti veya dana eti",
+                "soğan",
+                "sarımsak",
+                "zeytinyağı",
+                "tuz",
+                "karabiber",
+                "kırmızı biber"
+            ],
+            "tarif": """
+            1. Eti küçük parçalar halinde doğrayın
+            2. Soğan ve sarımsağı ince ince doğrayın
+            3. Tüm malzemeleri karıştırıp marine edin
+            4. En az 2 saat buzdolabında bekletin
+            5. Şişlere dizin
+            6. Mangalda veya fırında pişirin
+            7. Lavaş ekmek ve közlenmiş sebzelerle servis yapın
+            """
+        },
+        "pide": {
+            "malzemeler": [
+                "un",
+                "maya",
+                "su",
+                "tuz",
+                "kıyma",
+                "soğan",
+                "karabiber"
+            ],
+            "tarif": """
+            1. Hamur için malzemeleri yoğurun
+            2. 30 dakika mayalanmaya bırakın
+            3. İç harcı hazırlayın
+            4. Hamuru açın ve iç harcı yayın
+            5. Kenarlarını kıvırın
+            6. 200 derece fırında 15-20 dakika pişirin
+            """
+        }
     },
-    "recipes": {
-        "turkish": [
-            "Karnıyarık tarifi: Patlıcanları közleyip...",
-            "İçli köfte yapımı: Bulgur ve kıymayı..."
+    "tarifler": {
+        "kolay": [
+            "Menemen",
+            "Makarna",
+            "Pilav",
+            "Omlet"
         ],
-        "international": [
-            "İtalyan makarna sosu: Domates ve fesleğen...",
-            "Çin pilavı: Pirinç ve sebzeleri..."
+        "orta": [
+            "Pide",
+            "Lahmacun",
+            "Mantı",
+            "Karnıyarık"
+        ],
+        "zor": [
+            "Kebap",
+            "İskender",
+            "Hünkar Beğendi",
+            "Kuru Fasulye"
         ]
     }
 }
 
-FOOD_KEYWORDS = {
-    "restaurants": ["restoran", "lokanta", "kebapçı", "dönerci", "balıkçı"],
-    "recipes": ["tarif", "yapılış", "nasıl yapılır", "malzemeler"]
+COMMON_QUESTIONS = {
+    "Kebap nasıl yapılır?": """
+    Kebap yapımı için:
+    1. Eti küçük parçalar halinde doğrayın
+    2. Soğan ve sarımsağı ince ince doğrayın
+    3. Tüm malzemeleri karıştırıp marine edin
+    4. En az 2 saat buzdolabında bekletin
+    5. Şişlere dizin
+    6. Mangalda veya fırında pişirin
+    7. Lavaş ekmek ve közlenmiş sebzelerle servis yapın
+    """,
+    "Pide nasıl yapılır?": """
+    Pide yapımı için:
+    1. Hamur için malzemeleri yoğurun
+    2. 30 dakika mayalanmaya bırakın
+    3. İç harcı hazırlayın
+    4. Hamuru açın ve iç harcı yayın
+    5. Kenarlarını kıvırın
+    6. 200 derece fırında 15-20 dakika pişirin
+    """
 }
 
-def get_food_response(message: str) -> str:
-    """Yemek ile ilgili yerel verilerden yanıt üret"""
-    message = message.lower()
+def get_knowledge_base() -> Dict:
+    """Get food knowledge base
     
-    # Her kategori için kontrol et
-    for category, data in FOOD_KNOWLEDGE.items():
-        # Kategorinin anahtar kelimelerini kontrol et
-        if any(keyword in message for keyword in FOOD_KEYWORDS[category]):
-            # Alt kategorileri kontrol et
-            for subcategory, responses in data.items():
-                # İlgili yanıtı bul
-                for response in responses:
-                    if any(word in response.lower() for word in message.split()):
-                        return response
-                        
+    Returns:
+        Dict: Food knowledge base
+    """
+    return FOOD_KNOWLEDGE_BASE
+
+def get_common_questions() -> Dict[str, str]:
+    """Get common questions and answers
+    
+    Returns:
+        Dict[str, str]: Common questions and answers
+    """
+    return COMMON_QUESTIONS
+
+def find_answer(question: str) -> Optional[str]:
+    """Find answer for the given question
+    
+    Args:
+        question (str): Question to find answer for
+        
+    Returns:
+        Optional[str]: Answer if found, None otherwise
+    """
+    # Önce yaygın sorularda ara
+    if question in COMMON_QUESTIONS:
+        return COMMON_QUESTIONS[question]
+        
+    # Bilgi tabanında ara
+    question = question.lower()
+    
+    # Kebap tarifi sorusu
+    if "kebap" in question and ("nasıl" in question or "tarif" in question):
+        return FOOD_KNOWLEDGE_BASE["yemekler"]["kebap"]["tarif"]
+        
+    # Pide tarifi sorusu
+    if "pide" in question and ("nasıl" in question or "tarif" in question):
+        return FOOD_KNOWLEDGE_BASE["yemekler"]["pide"]["tarif"]
+        
     return None 

@@ -58,6 +58,7 @@ class TelegramBot:
     async def handle_message(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Gelen mesajları işle"""
         question = update.message.text
+        logger.info(f"Received question: {question}")
         
         try:
             # Uzman seç
@@ -65,19 +66,29 @@ class TelegramBot:
             logger.info(f"Selected expert: {expert_type}")
             
             if expert_type == "sports":
+                logger.info("Using sports expert")
                 response = await self.sports_expert.get_response(question)
+                logger.info(f"Sports expert response: {response}")
             elif expert_type == "food":
+                logger.info("Using food expert")
                 response = await self.food_expert.get_response(question)
+                logger.info(f"Food expert response: {response}")
             elif expert_type == "ai":
+                logger.info("Using AI expert")
                 response = await self.ai_expert.get_response(question)
+                logger.info(f"AI expert response: {response}")
             elif expert_type == "sudostar":
+                logger.info("Using SudoStar expert")
                 response = await self.sudostar_expert.get_response(question)
+                logger.info(f"SudoStar expert response: {response}")
             else:
+                logger.warning(f"No expert found for type: {expert_type}")
                 response = None
                 
             if response:
                 await update.message.reply_text(response)
             else:
+                logger.warning("No response generated")
                 await update.message.reply_text(
                     "Üzgünüm, sorunuzu yanıtlayamadım. "
                     "Lütfen sorunuzu daha açık bir şekilde ifade edin veya "
@@ -85,7 +96,7 @@ class TelegramBot:
                 )
                 
         except Exception as e:
-            logger.error(f"Error handling message: {str(e)}")
+            logger.error(f"Error handling message: {str(e)}", exc_info=True)
             await update.message.reply_text(
                 "Üzgünüm, bir hata oluştu. Lütfen tekrar deneyin."
             )

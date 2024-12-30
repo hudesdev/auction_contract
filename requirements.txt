@@ -1,8 +1,5 @@
-tweepy==4.14.0
-python-dotenv==1.0.0
-openai>=1.0.0
-requests==2.31.0
-beautifulsoup4==4.12.2
-googlesearch-python==1.2.3
 python-telegram-bot==20.7
+python-dotenv==1.0.0
+openai==1.6.1
 aiohttp==3.9.1
+beautifulsoup4==4.12.2
