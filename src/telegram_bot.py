@@ -37,6 +37,7 @@ class TelegramBot:
         self.food_expert = FoodExpert(config)
         self.ai_expert = AIExpert(config)
         self.expert_selector = ExpertSelector()
+        self.application = None
         
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Bot başlatıldığında çalışır"""
@@ -87,17 +88,17 @@ class TelegramBot:
         """Bot'u çalıştır"""
         try:
             # Bot oluştur
-            application = Application.builder().token(self.token).build()
+            self.application = Application.builder().token(self.token).build()
             
             # Komut ve mesaj işleyicileri ekle
-            application.add_handler(CommandHandler("start", self.start))
-            application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_message))
+            self.application.add_handler(CommandHandler("start", self.start))
+            self.application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_message))
             
             # Bot'u başlat
             logger.info("Bot starting...")
-            await application.initialize()
-            await application.start()
-            await application.run_polling(drop_pending_updates=True)
+            await self.application.initialize()
+            await self.application.start()
+            await self.application.run_polling(drop_pending_updates=True, close_loop=False)
             
         except Exception as e:
             logger.error(f"Error running bot: {str(e)}")
@@ -105,12 +106,23 @@ class TelegramBot:
             
 async def main():
     """Main entry point"""
+    bot = None
     try:
         bot = TelegramBot()
         await bot.run()
     except Exception as e:
         logger.error(f"Failed to start bot: {str(e)}")
+        if bot:
+            try:
+                await bot.application.stop()
+                await bot.application.shutdown()
+            except Exception as shutdown_error:
+                logger.error(f"Error during shutdown: {str(shutdown_error)}")
         
 if __name__ == "__main__":
-    import asyncio
-    asyncio.run(main()) 
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        logger.info("Bot stopped by user")
+    except Exception as e:
+        logger.error(f"Bot crashed: {str(e)}") 
