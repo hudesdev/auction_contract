@@ -37,7 +37,7 @@ class TelegramBot:
         self.sports_expert = SportsExpert(config)
         self.food_expert = FoodExpert(config)
         self.ai_expert = AIExpert(config)
-        self.sudostar_expert = SudoStarExpert()
+        self.sudostar_expert = SudoStarExpert(config)
         self.expert_selector = ExpertSelector()
         self.application = None
         
@@ -70,17 +70,7 @@ class TelegramBot:
             elif expert_type == "ai":
                 response = await self.ai_expert.get_response(question)
             elif expert_type == "sudostar":
-                context = self.sudostar_expert.get_relevant_context(question)
-                response = context.get("common_questions", {}).get(question, None)
-                if not response:
-                    kb = context.get("knowledge_base", {})
-                    if "ödemeler" in question.lower() or "para" in question.lower():
-                        payment_info = kb.get("rewards_system", {}).get("diamonds", {}).get("payment_processing", {})
-                        response = f"Ödemeler {payment_info.get('processing_time', '1-3 gün')} içinde hesabınıza aktarılır."
-                    elif "elmas" in question.lower():
-                        diamonds = kb.get("rewards_system", {}).get("diamonds", {})
-                        conversion = diamonds.get("conversion_rate", {})
-                        response = f"Her {conversion.get('diamonds_per_dollar', 5000)} elmas 1 USD'ye eşittir. Minimum çekim miktarı {conversion.get('minimum_withdrawal', 25000)} elmastır."
+                response = await self.sudostar_expert.get_response(question)
             else:
                 response = None
                 

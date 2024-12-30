@@ -1,45 +1,37 @@
-"""Kaynak yöneticisi"""
+"""Resource manager for managing shared resources"""
 import logging
-from typing import Dict, Any, Optional
-from src.core.openai_client import OpenAIClient
-from src.core.tavily_client import TavilyClient
-from src.utils.config import ConfigLoader
+from typing import Dict, Any
+from src.utils.openai_client import OpenAIClient
+from src.utils.cache import Cache
 
 logger = logging.getLogger(__name__)
 
 class ResourceManager:
-    """API istemcilerini yöneten sınıf"""
-    
-    def __init__(self):
-        """Initialize resource manager"""
-        self.config = ConfigLoader.load_config()
-        self._clients = {}
-        
-        try:
-            # OpenAI istemcisi
-            self._clients["openai"] = OpenAIClient()
-            logger.info("OpenAI client başarıyla oluşturuldu")
-            
-            # Tavily istemcisi
-            self._clients["tavily"] = TavilyClient()
-            logger.info("Tavily client başarıyla oluşturuldu")
-            
-        except Exception as e:
-            logger.error(f"API istemcileri başlatma hatası: {str(e)}")
-            raise
-            
-    def get_client(self, client_type: str) -> Any:
-        """Get API client by type
+    def __init__(self, config: Dict[str, Any]):
+        """Initialize resource manager
         
         Args:
-            client_type (str): Type of client ("openai" or "tavily")
-            
-        Returns:
-            Any: API client instance
+            config (Dict[str, Any]): Configuration dictionary
         """
-        return self._clients.get(client_type)
+        self.config = config
+        self.openai_client = OpenAIClient()
+        self.cache = Cache(
+            enabled=config["cache"]["enabled"],
+            ttl=config["cache"]["ttl"]
+        )
         
-    def __del__(self):
-        """Cleanup resources"""
-        # İstemcileri temizle
-        self._clients.clear() 
+    def get_openai_client(self) -> OpenAIClient:
+        """Get OpenAI client instance
+        
+        Returns:
+            OpenAIClient: OpenAI client instance
+        """
+        return self.openai_client
+        
+    def get_cache(self) -> Cache:
+        """Get cache instance
+        
+        Returns:
+            Cache: Cache instance
+        """
+        return self.cache 

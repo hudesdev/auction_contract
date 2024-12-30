@@ -1,0 +1,24 @@
+{
+    "cache": {
+        "enabled": true,
+        "ttl": 3600
+    },
+    "experts": {
+        "sports": {
+            "cache_enabled": true,
+            "cache_ttl": 3600
+        },
+        "food": {
+            "cache_enabled": true,
+            "cache_ttl": 3600
+        },
+        "ai": {
+            "cache_enabled": true,
+            "cache_ttl": 3600
+        },
+        "sudostar": {
+            "cache_enabled": true,
+            "cache_ttl": 3600
+        }
+    }
+} 

@@ -31,6 +31,17 @@ class EventBus:
             self.subscribers[event_type].remove(callback)
             self.logger.info(f"'{event_type}' event'inden abonelik kaldırıldı")
             
+    def unsubscribe_all(self, callback: Callable) -> None:
+        """Tüm event'lerden aboneliği iptal et
+        
+        Args:
+            callback (Callable): İptal edilecek callback fonksiyonu
+        """
+        for event_type in list(self.subscribers.keys()):
+            if callback in self.subscribers[event_type]:
+                self.subscribers[event_type].remove(callback)
+                self.logger.info(f"'{event_type}' event'inden abonelik kaldırıldı")
+            
     def publish(self, event_type: str, data: dict = None) -> None:
         """Event yayınla"""
         if event_type in self.subscribers:

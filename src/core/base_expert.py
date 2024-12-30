@@ -2,6 +2,7 @@ from typing import Optional, List, Dict, Any
 from src.utils.logger import Logger
 from src.core.event_bus import EventBus
 from src.core.resource_manager import ResourceManager
+from src.utils.config import ConfigLoader
 import json
 
 class BaseExpert:
@@ -12,11 +13,13 @@ class BaseExpert:
         self.name = name
         self.logger = Logger(name)
         self.event_bus = EventBus()
-        self.resource_manager = ResourceManager()
+        
+        # Konfigürasyon ve resource manager
+        self.config = ConfigLoader.load_config()
+        self.resource_manager = ResourceManager(self.config)
         
         # API istemcilerini al
-        self.openai_client = self.resource_manager.get_client("openai")
-        self.tavily_client = self.resource_manager.get_client("tavily")
+        self.openai_client = self.resource_manager.get_openai_client()
         
         # Event'lere abone ol
         self.event_bus.subscribe("question_received", self._on_question_received)

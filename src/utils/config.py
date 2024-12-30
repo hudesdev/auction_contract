@@ -18,6 +18,10 @@ class ConfigLoader:
         """
         # Varsayılan yapılandırma
         config = {
+            "cache": {
+                "enabled": True,
+                "ttl": 3600
+            },
             "experts": {
                 "sports": {
                     "cache_enabled": True,
@@ -56,6 +60,15 @@ class ConfigLoader:
                     "tavily": {
                         "max_results": 5,
                         "search_depth": "advanced"
+                    }
+                },
+                "sudostar": {
+                    "cache_enabled": True,
+                    "cache_ttl": 3600,
+                    "openai": {
+                        "model": "gpt-4",
+                        "max_tokens": 300,
+                        "temperature": 0.7
                     }
                 }
             },
