@@ -99,8 +99,12 @@ class TelegramBot:
             logger.info("Bot starting...")
             await self.application.initialize()
             await self.application.start()
-            await self.application.updater.start_polling()
+            await self.application.updater.start_polling(drop_pending_updates=True)
             
+            # Sonsuz döngü ile bot'u çalışır durumda tut
+            while True:
+                await asyncio.sleep(1)
+                
         except Exception as e:
             logger.error(f"Error running bot: {str(e)}")
             if self.application:
@@ -113,9 +117,6 @@ async def main():
     try:
         bot = TelegramBot()
         await bot.run()
-        # Sonsuz döngü ile bot'u çalışır durumda tut
-        while True:
-            await asyncio.sleep(1)
     except Exception as e:
         logger.error(f"Failed to start bot: {str(e)}")
     finally:

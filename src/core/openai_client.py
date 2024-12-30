@@ -20,7 +20,7 @@ class OpenAIClient:
     async def get_completion(self, system_prompt: str, user_message: str) -> Optional[str]:
         """OpenAI API'den yanıt al"""
         try:
-            response = await self.client.chat.completions.create(
+            response = self.client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
                     {"role": "system", "content": system_prompt},
