@@ -26,8 +26,8 @@ class ExpertSelector:
             Verilen soruyu analiz edip en uygun uzmana yönlendirmelisin.
             Yanıtı JSON formatında ver: {"expert": string, "confidence": float}
             Expert tipleri: 
-            - "spor": Futbol, basketbol, voleybol ve diğer sporlarla ilgili sorular
-            - "yemek": Yemek tarifleri, restoranlar ve beslenme ile ilgili sorular
+            - "sports": Futbol, basketbol, voleybol ve diğer sporlarla ilgili sorular
+            - "food": Yemek tarifleri, restoranlar ve beslenme ile ilgili sorular
             - "ai": Yapay zeka teknolojileri ve uygulamaları ile ilgili sorular
             - "sudostar": SudoStar uygulaması, özellikleri ve ödeme sistemi ile ilgili sorular"""
             
