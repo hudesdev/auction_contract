@@ -97,25 +97,38 @@ class TelegramBot:
             
             # Bot'u başlat
             logger.info("Bot starting...")
+            
+            # Webhook'u temizle
+            await self.application.bot.delete_webhook()
+            
+            # Bot'u başlat
             await self.application.initialize()
             await self.application.start()
+            
+            # Polling başlat
             await self.application.updater.start_polling(
                 drop_pending_updates=True,
                 allowed_updates=Update.ALL_TYPES,
-                bootstrap_retries=-1,
+                bootstrap_retries=0,
                 read_timeout=30,
-                write_timeout=30
+                write_timeout=30,
+                connect_timeout=30,
+                pool_timeout=30
             )
             
             # Sonsuz döngü ile bot'u çalışır durumda tut
-            while True:
-                await asyncio.sleep(1)
+            try:
+                await self.application.updater.running
+            except Exception as running_error:
+                logger.error(f"Error in running loop: {str(running_error)}")
+                raise running_error
                 
         except Exception as e:
             logger.error(f"Error running bot: {str(e)}")
             if self.application:
                 try:
                     await self.application.stop()
+                    await self.application.shutdown()
                 except Exception as stop_error:
                     logger.error(f"Error stopping application: {str(stop_error)}")
             raise e
