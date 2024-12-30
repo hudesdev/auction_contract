@@ -95,10 +95,13 @@ class TelegramBot:
             
             # Bot'u başlat
             logger.info("Bot starting...")
-            await application.run_polling(allowed_updates=Update.ALL_TYPES)
+            await application.initialize()
+            await application.start()
+            await application.run_polling(drop_pending_updates=True)
             
         except Exception as e:
             logger.error(f"Error running bot: {str(e)}")
+            raise e
             
 async def main():
     """Main entry point"""
