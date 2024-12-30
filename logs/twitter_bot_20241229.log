@@ -1,0 +1,319 @@
+2024-12-29 23:01:16 - INFO - Bot baþlatýldý - Mod: Tweet yorumu yanýtlama
+2024-12-29 23:01:16 - WARNING - Rate limit hit, waiting 60 seconds... (Attempt 1/3)
+2024-12-29 23:01:21 - INFO - Program kullanýcý tarafýndan sonlandýrýldý.
+2024-12-29 23:01:47 - INFO - Bot baþlatýldý - Mod: Mention yanýtlama
+2024-12-29 23:01:47 - WARNING - Rate limit hit, waiting 60 seconds... (Attempt 1/3)
+2024-12-29 23:01:54 - INFO - Program kullanýcý tarafýndan sonlandýrýldý.
+2024-12-29 23:02:29 - INFO - Bot baþlatýldý - Mod: Tweet yorumu yanýtlama
+2024-12-29 23:02:29 - WARNING - Rate limit hit, waiting 60 seconds... (Attempt 1/3)
+2024-12-29 23:02:31 - INFO - Program kullanýcý tarafýndan sonlandýrýldý.
+2024-12-29 23:03:45 - INFO - Bot baþlatýldý - Mod: Tweet yorumu yanýtlama
+2024-12-29 23:03:45 - WARNING - Rate limit hit, waiting 60 seconds... (Attempt 1/1)
+2024-12-29 23:03:55 - INFO - Program kullanýcý tarafýndan sonlandýrýldý.
+2024-12-29 23:05:00 - INFO - Bot baþlatýldý - Mod: Tweet yorumu yanýtlama
+2024-12-29 23:05:00 - WARNING - Rate limit hit, waiting 60 seconds... (Attempt 1/1)
+2024-12-29 23:05:46 - INFO - Program kullanýcý tarafýndan sonlandýrýldý.
+2024-12-29 23:12:57 - INFO - Bot baþlatýldý - Mod: Tweet yorumu yanýtlama
+2024-12-29 23:12:57 - ERROR - Error getting user info: 429 Too Many Requests
+Too Many Requests
+2024-12-29 23:12:57 - ERROR - Error getting replies: 'NoneType' object has no attribute 'id'
+2024-12-29 23:15:14 - INFO - Bot baþlatýldý - Mod: Tweet yorumu yanýtlama
+2024-12-29 23:15:14 - ERROR - Kullanýcý bilgileri alýnýrken hata: 429 Too Many Requests
+Too Many Requests
+2024-12-29 23:15:14 - ERROR - Yorumlar alýnýrken hata: 'NoneType' object has no attribute 'id'
+2024-12-29 23:25:20 - INFO - Bot baþlatýldý - Mod: Tweet yorumu yanýtlama
+2024-12-29 23:25:20 - ERROR - Kullanýcý bilgileri alýnýrken hata: 429 Too Many Requests
+Too Many Requests
+2024-12-29 23:25:20 - ERROR - Yorumlar alýnýrken hata: 'NoneType' object has no attribute 'id'
+2024-12-29 23:25:29 - INFO - Bot baþlatýldý - Mod: Mention yanýtlama
+2024-12-29 23:25:30 - ERROR - Kullanýcý bilgileri alýnýrken hata: 429 Too Many Requests
+Too Many Requests
+2024-12-29 23:25:30 - ERROR - Mention'lar alýnýrken hata: 'NoneType' object has no attribute 'id'
+2024-12-29 23:28:33 - INFO - Bot baþlatýldý - Mod: Mention yanýtlama
+2024-12-29 23:28:33 - ERROR - Kullanýcý bilgileri alýnýrken hata: 429 Too Many Requests
+Too Many Requests
+2024-12-29 23:28:33 - ERROR - Mention'lar alýnýrken hata: 'NoneType' object has no attribute 'id'
+2024-12-29 23:28:43 - INFO - Bot baþlatýldý - Mod: Tweet yorumu yanýtlama
+2024-12-29 23:28:43 - ERROR - Kullanýcý bilgileri alýnýrken hata: 429 Too Many Requests
+Too Many Requests
+2024-12-29 23:28:43 - ERROR - Yorumlar alýnýrken hata: 'NoneType' object has no attribute 'id'
+2024-12-29 23:32:35 - INFO - Bot baþlatýldý - Mod: Tweet gönderme
+2024-12-29 23:32:35 - ERROR - Tweet gönderilirken hata: 429 Too Many Requests
+Too Many Requests
+2024-12-29 23:33:56 - INFO - Bot baþlatýldý - Mod: Tweet gönderme
+2024-12-29 23:33:56 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:33:56 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:33:56 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:33:56 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:33:56 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:33:56 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:33:57 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:33:57 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:33:57 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:33:57 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:33:57 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:33:57 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:33:57 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:33:58 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:33:58 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:33:58 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:33:58 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:33:58 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:33:58 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:33:59 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:33:59 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:33:59 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:33:59 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:33:59 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:33:59 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:33:59 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:00 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:00 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:00 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:00 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:00 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:00 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:00 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:01 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:01 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:01 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:01 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:01 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:01 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:01 - INFO - Program kullanýcý tarafýndan sonlandýrýldý
+2024-12-29 23:34:55 - INFO - Bot baþlatýldý - Mod: Tweet gönderme
+2024-12-29 23:34:55 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:55 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:56 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:56 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:56 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:56 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:56 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:56 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:56 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:57 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:57 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:57 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:57 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:57 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:57 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:57 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:58 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:34:58 - INFO - Program kullanýcý tarafýndan sonlandýrýldý
+2024-12-29 23:36:32 - INFO - Bot baþlatýldý - Mod: Tweet gönderme
+2024-12-29 23:36:32 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:36:32 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:36:32 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:36:32 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:36:33 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:36:33 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:36:33 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:36:33 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:36:33 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:36:33 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:36:33 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:36:34 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:36:34 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:36:34 - INFO - Program kullanýcý tarafýndan sonlandýrýldý
+2024-12-29 23:40:01 - INFO - Bot baþlatýldý - Mod: Tweet gönderme
+2024-12-29 23:40:01 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:40:01 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:40:02 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:40:02 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:40:02 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:40:02 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:40:02 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:40:02 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:40:02 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:40:03 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:40:03 - INFO - Program kullanýcý tarafýndan sonlandýrýldý
+2024-12-29 23:41:49 - INFO - Bot baþlatýldý - Mod: Tweet gönderme
+2024-12-29 23:41:49 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:49 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:50 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:50 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:50 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:50 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:50 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:50 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:50 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:51 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:51 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:51 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:51 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:51 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:51 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:51 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:52 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:52 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:52 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:52 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:52 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:52 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:52 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:53 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:53 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:53 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:53 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:53 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:53 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:53 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:54 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:54 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:54 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:54 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:54 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:54 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:54 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:55 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:55 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:55 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:55 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:41:55 - INFO - Program kullanýcý tarafýndan sonlandýrýldý
+2024-12-29 23:44:53 - INFO - Bot baþlatýldý - Mod: Tweet gönderme
+2024-12-29 23:44:54 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:45:05 - INFO - Bot baþlatýldý - Mod: Tweet gönderme
+2024-12-29 23:45:05 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:47:13 - INFO - Bot baþlatýldý - Mod: Tweet gönderme
+2024-12-29 23:47:13 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:50:05 - INFO - Bot baþlatýldý - Mod: Tweet gönderme
+2024-12-29 23:50:05 - ERROR - Tweet gönderilirken hata: 401 Unauthorized
+Unauthorized
+2024-12-29 23:56:51 - INFO - Bot baþlatýldý - Mod: Tweet gönderme
+2024-12-29 23:56:51 - ERROR - V2 API ile tweet gönderilemedi: 401 Unauthorized
+Unauthorized
+2024-12-29 23:56:52 - ERROR - V1.1 API ile tweet gönderilemedi: 401 Unauthorized
+32 - Could not authenticate you.
+2024-12-29 23:57:04 - INFO - Bot baþlatýldý - Mod: Tweet gönderme
+2024-12-29 23:57:04 - ERROR - V2 API ile tweet gönderilemedi: 401 Unauthorized
+Unauthorized
+2024-12-29 23:57:04 - ERROR - V1.1 API ile tweet gönderilemedi: 401 Unauthorized
+32 - Could not authenticate you.
+2024-12-29 23:57:42 - INFO - Bot baþlatýldý - Mod: Tweet gönderme
+2024-12-29 23:57:42 - ERROR - V2 API ile tweet gönderilemedi: 401 Unauthorized
+Unauthorized
+2024-12-29 23:57:42 - ERROR - V1.1 API ile tweet gönderilemedi: 401 Unauthorized
+32 - Could not authenticate you.
