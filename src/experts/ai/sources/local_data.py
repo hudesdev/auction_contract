@@ -51,6 +51,19 @@ AI_KNOWLEDGE = {
     }
 }
 
+COMMON_QUESTIONS = {
+    "what_is_ai": "Yapay zeka nedir?",
+    "how_works": "Yapay zeka nasıl çalışır?",
+    "applications": "Yapay zeka nerelerde kullanılır?",
+    "future": "Yapay zekanın geleceği nasıl olacak?",
+    "ethics": "Yapay zeka kullanımında etik konular nelerdir?",
+    "risks": "Yapay zekanın riskleri nelerdir?",
+    "benefits": "Yapay zekanın faydaları nelerdir?",
+    "learning": "Yapay zeka nasıl öğrenir?",
+    "difference": "AI ve ML arasındaki fark nedir?",
+    "impact": "AI'nin topluma etkisi ne olacak?"
+}
+
 AI_KEYWORDS = {
     "general": ["yapay zeka", "ai", "artificial intelligence", "machine learning", "deep learning"],
     "models": ["model", "gpt", "bert", "dalle", "diffusion", "transformer"],
@@ -58,19 +71,28 @@ AI_KEYWORDS = {
     "ethics": ["etik", "gizlilik", "güvenlik", "yanlılık", "düzenleme", "kural"]
 }
 
-def get_ai_response(message: str) -> str:
-    """Yapay zeka ile ilgili yerel verilerden yanıt üret"""
-    message = message.lower()
+def get_knowledge_base() -> dict:
+    """AI bilgi tabanını döndür"""
+    return AI_KNOWLEDGE
+
+def get_common_questions() -> dict:
+    """Sık sorulan soruları döndür"""
+    return COMMON_QUESTIONS
+
+def find_answer(question: str) -> str:
+    """Soruya uygun yanıtı bul"""
+    question = question.lower()
     
     # Her kategori için kontrol et
     for category, data in AI_KNOWLEDGE.items():
         # Kategorinin anahtar kelimelerini kontrol et
-        if any(keyword in message for keyword in AI_KEYWORDS[category]):
+        if any(keyword in question for keyword in AI_KEYWORDS[category]):
             # Alt kategorileri kontrol et
             for subcategory, responses in data.items():
                 # İlgili yanıtı bul
                 for response in responses:
-                    if any(word in response.lower() for word in message.split()):
+                    if any(word in response.lower() for word in question.split()):
                         return response
-                        
-    return None 
+    
+    # Eğer spesifik bir yanıt bulunamazsa, genel bir yanıt döndür
+    return "Üzgünüm, bu soruya özel bir yanıtım yok. Yapay zeka hakkında başka bir soru sormak ister misiniz?" 

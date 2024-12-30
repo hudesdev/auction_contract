@@ -1,35 +1,32 @@
-"""AI Expert için arama sorguları"""
+"""AI konuları için arama sorguları"""
 
-SEARCH_TEMPLATES = {
-    "general": {
-        "explain": "yapay zeka {concept} nedir",
-        "history": "{topic} tarihi gelişimi",
-        "future": "{topic} geleceği tahminler",
-        "comparison": "{term1} vs {term2} farkları"
-    },
-    "technical": {
-        "model": "{model} yapay zeka modeli nasıl çalışır",
-        "algorithm": "{algorithm} algoritması detaylı açıklama",
-        "architecture": "{architecture} mimarisi nedir",
-        "implementation": "{technology} nasıl uygulanır"
-    },
-    "applications": {
-        "use_case": "{industry} sektöründe yapay zeka kullanımı",
-        "examples": "{technology} gerçek dünya örnekleri",
-        "tutorial": "{tool} kullanım kılavuzu",
-        "integration": "{system} yapay zeka entegrasyonu"
-    },
-    "ethics": {
-        "concerns": "{topic} etik sorunları",
-        "guidelines": "{area} etik kuralları",
-        "impact": "{technology} sosyal etkileri",
-        "regulation": "{region} yapay zeka düzenlemeleri"
-    }
+SEARCH_QUERIES = {
+    "general": [
+        "yapay zeka nedir",
+        "artificial intelligence basics",
+        "machine learning fundamentals",
+        "deep learning explained"
+    ],
+    "models": [
+        "GPT-4 özellikleri",
+        "BERT model architecture",
+        "LLaMA model capabilities",
+        "Stable Diffusion tutorial"
+    ],
+    "applications": [
+        "AI business applications",
+        "artificial intelligence in healthcare",
+        "AI in scientific research",
+        "machine learning use cases"
+    ],
+    "ethics": [
+        "AI ethics principles",
+        "yapay zeka etik kuralları",
+        "artificial intelligence regulations",
+        "AI privacy concerns"
+    ]
 }
 
-def get_search_query(category: str, template: str, **kwargs) -> str:
-    """Arama sorgusu oluştur"""
-    query_template = SEARCH_TEMPLATES.get(category, {}).get(template)
-    if query_template:
-        return query_template.format(**kwargs)
-    return None 
+def get_search_queries() -> dict:
+    """Arama sorgularını döndür"""
+    return SEARCH_QUERIES 

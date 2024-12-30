@@ -1,61 +1,32 @@
-"""AI Expert için URL kaynakları"""
+"""AI konuları için URL kaynakları"""
 
-AI_URLS = {
-    "news": {
-        "general": [
-            "https://www.artificialintelligence-news.com/",
-            "https://www.ai-trends.com/",
-            "https://venturebeat.com/category/ai/"
-        ],
-        "research": [
-            "https://arxiv.org/list/cs.AI/recent",
-            "https://paperswithcode.com/",
-            "https://www.nature.com/subjects/artificial-intelligence"
-        ]
-    },
-    "learning": {
-        "tutorials": [
-            "https://www.deeplearning.ai/",
-            "https://www.fast.ai/",
-            "https://www.coursera.org/courses?query=artificial%20intelligence"
-        ],
-        "documentation": [
-            "https://huggingface.co/docs",
-            "https://pytorch.org/docs/",
-            "https://www.tensorflow.org/guide"
-        ]
-    },
-    "applications": {
-        "tools": [
-            "https://openai.com/blog/",
-            "https://stability.ai/blog",
-            "https://www.anthropic.com/blog"
-        ],
-        "examples": [
-            "https://github.com/topics/artificial-intelligence",
-            "https://paperswithcode.com/sota",
-            "https://huggingface.co/models"
-        ]
-    },
-    "ethics": {
-        "guidelines": [
-            "https://www.partnershiponai.org/",
-            "https://www.aiethics.cc/",
-            "https://ethicsinaction.ieee.org/"
-        ],
-        "discussions": [
-            "https://hai.stanford.edu/",
-            "https://www.fast.ai/topics/#ethics",
-            "https://www.eff.org/ai"
-        ]
-    }
+URL_SOURCES = {
+    "general": [
+        "https://www.yapayzekatr.com/yapay-zeka-nedir/",
+        "https://www.ibm.com/tr-tr/topics/artificial-intelligence",
+        "https://aws.amazon.com/tr/machine-learning/what-is-ai/",
+        "https://www.microsoft.com/tr-tr/ai"
+    ],
+    "models": [
+        "https://openai.com/gpt-4",
+        "https://huggingface.co/docs/transformers/model_doc/bert",
+        "https://ai.meta.com/llama/",
+        "https://stability.ai/stable-diffusion"
+    ],
+    "applications": [
+        "https://www.ibm.com/tr-tr/watson",
+        "https://cloud.google.com/ai-platform",
+        "https://azure.microsoft.com/tr-tr/solutions/ai/",
+        "https://aws.amazon.com/tr/machine-learning/"
+    ],
+    "ethics": [
+        "https://www.unesco.org/en/artificial-intelligence/recommendation-ethics",
+        "https://www.tubitak.gov.tr/tr/yapay-zeka-etik-ilkeleri",
+        "https://www.europarl.europa.eu/news/en/headlines/society/20230601STO93804/eu-ai-act-first-regulation-on-artificial-intelligence",
+        "https://www.who.int/news/item/28-06-2021-who-issues-first-global-report-on-ai-in-health"
+    ]
 }
 
-def get_urls(category: str, subcategory: str = None) -> list:
-    """Belirtilen kategori için URL'leri döndür"""
-    if subcategory:
-        return AI_URLS.get(category, {}).get(subcategory, [])
-    urls = []
-    for subcats in AI_URLS.get(category, {}).values():
-        urls.extend(subcats)
-    return urls 
+def get_url_sources() -> dict:
+    """URL kaynaklarını döndür"""
+    return URL_SOURCES 
