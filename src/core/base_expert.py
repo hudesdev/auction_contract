@@ -191,33 +191,19 @@ class BaseExpert:
     async def _websearch(self, message: str) -> List[str]:
         """Web araması yap ve sonuçları döndür"""
         # Araştırma tarihini ekle
-        search_query = f"{message} güncel bilgi {self.name}"
+        search_query = f"{message} güncel bilgi"
         
         try:
             # Tavily API ile web araması
-            results = await self.tavily_client.search(
+            results = await self.web_search.search(
                 search_query,
-                search_depth="advanced",
-                include_domains=["transfermarkt.com.tr", "sporx.com", "mackolik.com", "ntvspor.net"],
-                exclude_domains=["pinterest.com", "twitter.com", "facebook.com"],
                 max_results=5
             )
             
             if not results:
                 return []
                 
-            documents = []
-            for result in results:
-                # Sonucun tarihini kontrol et
-                if publish_date := result.get('published_date'):
-                    # Son 1 ay içindeki sonuçları al
-                    if self._is_recent(publish_date):
-                        if content := result.get('content'):
-                            documents.append(f"[{publish_date}] {content}")
-                        elif snippet := result.get('snippet'):
-                            documents.append(f"[{publish_date}] {snippet}")
-                
-            return documents
+            return results
             
         except Exception as e:
             self.logger.error(f"Web arama hatası: {str(e)}")
@@ -239,24 +225,31 @@ class BaseExpert:
             return None
             
         system_prompt = f"""Sen bir {self.name} uzmanısın.
-        Verilen dokümanları kullanarak soruya kapsamlı ve doğru bir yanıt üretmelisin.
+        Verilen web arama sonuçlarını kullanarak soruya kapsamlı ve doğru bir yanıt üretmelisin.
         Yanıt üretirken şu kurallara uy:
-        1. Sadece verilen dokümanlardaki bilgileri kullan
-        2. Bilgilerin tarihlerine dikkat et ve en güncel bilgileri kullan
-        3. Emin olmadığın bilgileri verme
-        4. Yanıtı JSON formatında ver: {{"text": string, "is_supported": boolean, "confidence": float}}
-        5. Bilgiler yetersiz veya güncel değilse is_supported: false döndür"""
+        1. Web arama sonuçlarındaki bilgilerin doğruluğunu kontrol et
+        2. Bilgilerin güncelliğini kontrol et
+        3. Çelişkili bilgiler varsa en güvenilir kaynağı seç
+        4. Emin olmadığın bilgileri verme
+        5. Yanıtı JSON formatında ver: {{"text": string, "is_supported": boolean, "confidence": float}}
+        6. Bilgiler yetersiz, güncel değil veya güvenilir değilse is_supported: false döndür"""
         
         user_message = f"""Soru: {message}
-        
-        Kaynaklar:
+
+        Web arama sonuçları:
         {chr(10).join(documents)}
         
-        Bu kaynaklara dayanarak soruyu yanıtla."""
+        Bu bilgileri kullanarak soruya yanıt ver."""
         
         try:
             response = await self.openai_client.get_completion(system_prompt, user_message)
-            return json.loads(response)
+            result = json.loads(response)
+            
+            # Güven skoru yeterince yüksek değilse desteklenmez olarak işaretle
+            if result.get("confidence", 0) < 0.7:
+                result["is_supported"] = False
+                
+            return result
         except:
             return None
             

@@ -5,6 +5,7 @@ from src.core.base_expert import BaseExpert
 from src.utils.openai_client import OpenAIClient
 from src.utils.web_search import WebSearchClient
 from src.utils.cache import Cache
+import json
 
 class AIExpert(BaseExpert):
     def __init__(self, config: Dict[str, Any]):
@@ -100,21 +101,47 @@ class AIExpert(BaseExpert):
     async def _perform_web_search(self, query: str) -> Optional[str]:
         """Perform web search and generate response based on results"""
         try:
-            search_results = await self.web_search.search(query)
+            # Add AI context to search query
+            search_query = f"{query} yapay zeka AI güncel"
+            search_results = await self.web_search.search(search_query)
+            
             if not search_results:
                 return None
                 
             # Generate response based on search results
             context = "\n".join(search_results[:3])  # Use top 3 results
-            system_prompt = """Based on the following search results, generate a comprehensive
-            and accurate response to the user's query. If the search results are not relevant
-            or reliable, indicate that."""
+            system_prompt = """Sen bir yapay zeka uzmanısın. Web arama sonuçlarını kullanarak soruya kapsamlı ve doğru bir yanıt üretmelisin.
+            Yanıt üretirken şu kurallara uy:
+            1. Web arama sonuçlarındaki bilgilerin doğruluğunu kontrol et
+            2. Bilgilerin güncelliğini kontrol et
+            3. Çelişkili bilgiler varsa en güvenilir kaynağı seç
+            4. Emin olmadığın bilgileri verme
+            5. Yanıtı net ve anlaşılır bir şekilde ver"""
             
             response = await self.openai_client.get_completion(
                 system_prompt,
-                f"Query: {query}\n\nSearch Results: {context}"
+                f"Soru: {query}\n\nWeb arama sonuçları:\n{context}\n\nBu bilgileri kullanarak soruya yanıt ver."
             )
-            return response
+            
+            if response:
+                # Validate response with another OpenAI call
+                validation_prompt = """Web arama sonuçlarından üretilen yanıtın doğruluğunu kontrol et.
+                Yanıt güvenilir ve güncel bilgiler içeriyorsa onay ver.
+                Yanıt JSON formatında olmalı: {"is_valid": boolean, "reason": string}"""
+                
+                validation = await self.openai_client.get_completion(
+                    validation_prompt,
+                    f"Yanıt: {response}\n\nKaynaklar:\n{context}"
+                )
+                
+                try:
+                    validation_result = json.loads(validation)
+                    if validation_result.get("is_valid", False):
+                        return response
+                except:
+                    pass
+                    
+            return None
             
         except Exception as e:
             self.logger.error(f"Error in web search: {str(e)}")
