@@ -1,6 +1,6 @@
 """Base class for all experts"""
 from typing import Optional
-from src.core.openai_client import OpenAIClient
+from src.utils.openai_client import OpenAIClient
 
 class ExpertBase:
     def __init__(self, expert_type: str, system_message: str = None):
