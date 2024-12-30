@@ -1,3 +1,6 @@
-from .sudostar_expert import SudoStarExpert
+"""SudoStar expert modülü"""
 
-__all__ = ['SudoStarExpert'] 
+from .expert import SudoStarExpert
+from .config import get_expert_config
+
+__all__ = ['SudoStarExpert', 'get_expert_config'] 

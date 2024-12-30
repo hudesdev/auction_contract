@@ -11,7 +11,7 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
 
-from src.experts import SportsExpert, FoodExpert, AIExpert
+from src.experts import SportsExpert, FoodExpert, AIExpert, SudoStarExpert
 from src.core.expert_selector import ExpertSelector
 from src.utils.config import ConfigLoader
 
@@ -37,6 +37,7 @@ class TelegramBot:
         self.sports_expert = SportsExpert(config)
         self.food_expert = FoodExpert(config)
         self.ai_expert = AIExpert(config)
+        self.sudostar_expert = SudoStarExpert()
         self.expert_selector = ExpertSelector()
         self.application = None
         
@@ -48,6 +49,7 @@ class TelegramBot:
         1. Spor (futbol, basketbol, maçlar, antrenman)
         2. Yemek (tarifler, restoranlar, diyet)
         3. Yapay Zeka (teknolojiler, uygulamalar, etik)
+        4. SudoStar (özellikler, ödeme sistemi, elmas sistemi)
         
         Lütfen sorunuzu yazın."""
         
@@ -67,6 +69,18 @@ class TelegramBot:
                 response = await self.food_expert.get_response(question)
             elif expert_type == "ai":
                 response = await self.ai_expert.get_response(question)
+            elif expert_type == "sudostar":
+                context = self.sudostar_expert.get_relevant_context(question)
+                response = context.get("common_questions", {}).get(question, None)
+                if not response:
+                    kb = context.get("knowledge_base", {})
+                    if "ödemeler" in question.lower() or "para" in question.lower():
+                        payment_info = kb.get("rewards_system", {}).get("diamonds", {}).get("payment_processing", {})
+                        response = f"Ödemeler {payment_info.get('processing_time', '1-3 gün')} içinde hesabınıza aktarılır."
+                    elif "elmas" in question.lower():
+                        diamonds = kb.get("rewards_system", {}).get("diamonds", {})
+                        conversion = diamonds.get("conversion_rate", {})
+                        response = f"Her {conversion.get('diamonds_per_dollar', 5000)} elmas 1 USD'ye eşittir. Minimum çekim miktarı {conversion.get('minimum_withdrawal', 25000)} elmastır."
             else:
                 response = None
                 
@@ -76,7 +90,7 @@ class TelegramBot:
                 await update.message.reply_text(
                     "Üzgünüm, sorunuzu yanıtlayamadım. "
                     "Lütfen sorunuzu daha açık bir şekilde ifade edin veya "
-                    "spor, yemek ya da yapay zeka konularında bir soru sorun."
+                    "spor, yemek, yapay zeka ya da SudoStar konularında bir soru sorun."
                 )
                 
         except Exception as e:
