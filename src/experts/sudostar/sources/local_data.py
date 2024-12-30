@@ -6,6 +6,7 @@ SUDOSTAR_KNOWLEDGE_BASE = {
         "type": "Mobile Application",
         "platform": "Android & iOS",
         "description": "SudoStar is a powerful mobile application designed for automated social media management and content creation.",
+        "users": "30 million users worldwide",
         "main_features": [
             "Automated content generation",
             "Social media post scheduling",
