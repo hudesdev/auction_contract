@@ -3,6 +3,7 @@ import logging
 from src.core.expert_base import ExpertBase
 from src.utils.cache import Cache
 from src.utils.openai_client import OpenAIClient
+from .sources.local_data import get_knowledge_base, get_common_questions, find_answer
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +22,10 @@ class SportsExpert(ExpertBase):
         )
         self.openai_client = OpenAIClient()
         
+        # Load knowledge base
+        self.knowledge_base = get_knowledge_base()
+        self.common_questions = get_common_questions()
+        
     async def get_response(self, question: str) -> Optional[str]:
         """Get response for sports related question
         
@@ -36,6 +41,11 @@ class SportsExpert(ExpertBase):
             if cached_response:
                 logger.info("Cache hit for question: %s", question)
                 return cached_response
+                
+            # Try to find answer in local data
+            if answer := find_answer(question):
+                self.cache.set(question, answer)
+                return answer
                 
             # Generate response using OpenAI
             response = await self._generate_response(question)
@@ -62,10 +72,17 @@ class SportsExpert(ExpertBase):
         system_prompt = """Sen bir spor uzmanısın. 
         Futbol, basketbol, voleybol ve diğer sporlar hakkında detaylı bilgi sahibisin.
         Kullanıcının sorduğu spor ile ilgili soruları yanıtla.
-        Eğer soru sporla ilgili değilse, bunu belirt."""
+        Eğer soru sporla ilgili değilse, bunu belirt.
+        
+        Bilgi kaynağı:
+        {knowledge_base}
+        """
         
         try:
-            response = await self.openai_client.get_completion(system_prompt, question)
+            response = await self.openai_client.get_completion(
+                system_prompt.format(knowledge_base=str(self.knowledge_base)),
+                question
+            )
             return response
         except Exception as e:
             logger.error("Error generating sports response: %s", str(e))
