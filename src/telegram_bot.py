@@ -60,11 +60,11 @@ class TelegramBot:
             expert_type = self.expert_selector.select_expert(question)
             
             if expert_type == "spor":
-                response = self.sports_expert.get_response(question)
+                response = await self.sports_expert.get_response(question)
             elif expert_type == "yemek":
-                response = self.food_expert.get_response(question)
+                response = await self.food_expert.get_response(question)
             elif expert_type == "ai":
-                response = self.ai_expert.get_response(question)
+                response = await self.ai_expert.get_response(question)
             else:
                 response = None
                 
@@ -83,7 +83,7 @@ class TelegramBot:
                 "Üzgünüm, bir hata oluştu. Lütfen tekrar deneyin."
             )
             
-    def run(self):
+    async def run(self):
         """Bot'u çalıştır"""
         try:
             # Bot oluştur
@@ -95,18 +95,19 @@ class TelegramBot:
             
             # Bot'u başlat
             logger.info("Bot starting...")
-            application.run_polling(allowed_updates=Update.ALL_TYPES)
+            await application.run_polling(allowed_updates=Update.ALL_TYPES)
             
         except Exception as e:
             logger.error(f"Error running bot: {str(e)}")
             
-def main():
+async def main():
     """Main entry point"""
     try:
         bot = TelegramBot()
-        bot.run()
+        await bot.run()
     except Exception as e:
         logger.error(f"Failed to start bot: {str(e)}")
         
 if __name__ == "__main__":
-    main() 
+    import asyncio
+    asyncio.run(main()) 

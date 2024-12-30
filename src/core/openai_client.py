@@ -1,6 +1,6 @@
 from typing import Optional
 import os
-from openai import OpenAI
+from openai import AsyncOpenAI
 from utils.logger import Logger
 
 class OpenAIClient:
@@ -14,10 +14,10 @@ class OpenAIClient:
         if not api_key:
             self.logger.error("OPENAI_API_KEY bulunamadı!")
             raise ValueError("OPENAI_API_KEY environment variable is not set")
-        self.client = OpenAI(api_key=api_key)
+        self.client = AsyncOpenAI(api_key=api_key)
         self.logger.info("OpenAI client başarıyla oluşturuldu")
         
-    def get_completion(self, system_prompt: str, user_message: str) -> Optional[str]:
+    async def get_completion(self, system_prompt: str, user_message: str) -> Optional[str]:
         """
         OpenAI API'den yanıt al
         
@@ -30,7 +30,7 @@ class OpenAIClient:
         """
         try:
             self.logger.info(f"OpenAI'ya istek gönderiliyor. System: {system_prompt}, User: {user_message}")
-            response = self.client.chat.completions.create(
+            response = await self.client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 temperature=0.7,
                 messages=[

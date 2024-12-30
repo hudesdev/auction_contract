@@ -26,7 +26,7 @@ class BaseExpert:
         self.max_search_attempts = 3
         self.current_search_attempts = 0
         
-    def get_response(self, message: str) -> Optional[str]:
+    async def get_response(self, message: str) -> Optional[str]:
         """
         Mesaja yanıt üret. Akış:
         1. Bilgi alma (retrieve)
@@ -48,7 +48,7 @@ class BaseExpert:
             # 1. Bilgi alma - yerel kaynaklardan
             print("\n1. YEREL KAYNAKLARDAN BİLGİ ALMA")
             print("-"*30)
-            local_docs = self._retrieve_local_documents(message)
+            local_docs = await self._retrieve_local_documents(message)
             if local_docs:
                 print(f"- {len(local_docs)} adet yerel doküman bulundu")
             else:
@@ -57,7 +57,7 @@ class BaseExpert:
             # 2. Dokümanları değerlendir
             print("\n2. YEREL DOKÜMANLARI DEĞERLENDİRME")
             print("-"*30)
-            grade_result = self._grade_documents(local_docs, message)
+            grade_result = await self._grade_documents(local_docs, message)
             print(f"- Faydalı mı: {grade_result['is_useful']}")
             print(f"- Sebep: {grade_result.get('reason', '-')}")
             if 'relevance_score' in grade_result:
@@ -68,7 +68,7 @@ class BaseExpert:
             if grade_result["is_useful"]:
                 print("\n3. YEREL VERİDEN YANIT ÜRETME")
                 print("-"*30)
-                response = self._generate_response(local_docs, message)
+                response = await self._generate_response(local_docs, message)
                 if response and response["is_supported"]:
                     print("- Yanıt başarıyla üretildi")
                     print(f"- Güven skoru: {response.get('confidence', 0):.2f}")
@@ -91,7 +91,7 @@ class BaseExpert:
                 print(f"\nWeb arama denemesi {self.current_search_attempts}/{self.max_search_attempts}")
                 print("-"*30)
                 
-                web_docs = self._websearch(message)
+                web_docs = await self._websearch(message)
                 if web_docs:
                     print(f"- {len(web_docs)} adet web dokümanı bulundu")
                 else:
@@ -100,7 +100,7 @@ class BaseExpert:
                 # Dokümanları değerlendir
                 print("\n5. WEB DOKÜMANLARINI DEĞERLENDİRME")
                 print("-"*30)
-                grade_result = self._grade_documents(web_docs, message)
+                grade_result = await self._grade_documents(web_docs, message)
                 print(f"- Faydalı mı: {grade_result['is_useful']}")
                 print(f"- Sebep: {grade_result.get('reason', '-')}")
                 if 'relevance_score' in grade_result:
@@ -111,7 +111,7 @@ class BaseExpert:
                 if grade_result["is_useful"]:
                     print("\n6. WEB VERİSİNDEN YANIT ÜRETME")
                     print("-"*30)
-                    response = self._generate_response(web_docs, message)
+                    response = await self._generate_response(web_docs, message)
                     if response and response["is_supported"]:
                         print("- Yanıt başarıyla üretildi")
                         print(f"- Güven skoru: {response.get('confidence', 0):.2f}")
@@ -137,11 +137,11 @@ class BaseExpert:
             print(f"\nHATA OLUŞTU: {str(e)}")
             return None
 
-    def _retrieve_local_documents(self, message: str) -> List[str]:
+    async def _retrieve_local_documents(self, message: str) -> List[str]:
         """Alt sınıflar tarafından implement edilmeli"""
         return []
         
-    def _grade_documents(self, documents: List[str], message: str) -> Dict[str, Any]:
+    async def _grade_documents(self, documents: List[str], message: str) -> Dict[str, Any]:
         """Dokümanların kalitesini ve ilgililiğini değerlendir"""
         if not documents:
             return {"is_useful": False, "reason": "Doküman bulunamadı"}
@@ -170,7 +170,7 @@ class BaseExpert:
         Bu dokümanları yukarıdaki kriterlere göre değerlendir."""
         
         try:
-            response = self.openai_client.get_completion(system_prompt, user_message)
+            response = await self.openai_client.get_completion(system_prompt, user_message)
             result = json.loads(response)
             
             # Skorlar yeterince yüksek değilse faydasız olarak işaretle
@@ -185,14 +185,14 @@ class BaseExpert:
         except:
             return {"is_useful": False, "reason": "Değerlendirme yapılamadı"}
             
-    def _websearch(self, message: str) -> List[str]:
+    async def _websearch(self, message: str) -> List[str]:
         """Web araması yap ve sonuçları döndür"""
         # Araştırma tarihini ekle
         search_query = f"{message} güncel bilgi {self.name}"
         
         try:
             # Tavily API ile web araması
-            results = self.tavily_client.search(
+            results = await self.tavily_client.search(
                 search_query,
                 search_depth="advanced",
                 include_domains=["transfermarkt.com.tr", "sporx.com", "mackolik.com", "ntvspor.net"],
@@ -230,7 +230,7 @@ class BaseExpert:
         except:
             return True  # Tarih parse edilemezse kabul et
         
-    def _generate_response(self, documents: List[str], message: str) -> Optional[Dict[str, Any]]:
+    async def _generate_response(self, documents: List[str], message: str) -> Optional[Dict[str, Any]]:
         """Dokümanları kullanarak yanıt üret"""
         if not documents:
             return None
@@ -249,27 +249,27 @@ class BaseExpert:
         Kaynaklar:
         {chr(10).join(documents)}
         
-        Lütfen bu kaynaklara dayanarak soruyu yanıtla.
-        Eğer kaynaklar yetersiz veya güncel değilse, bunu belirt."""
+        Bu kaynaklara dayanarak soruyu yanıtla."""
         
         try:
-            response = self.openai_client.get_completion(system_prompt, user_message)
-            result = json.loads(response)
-            
-            # Güven skoru çok düşükse desteklenmediğini belirt
-            if result.get("confidence", 0) < 0.7:
-                result["is_supported"] = False
-                
-            return result
+            response = await self.openai_client.get_completion(system_prompt, user_message)
+            return json.loads(response)
         except:
             return None
-        
+            
     def _max_attempts_reached(self) -> bool:
         """Maximum deneme sayısına ulaşılıp ulaşılmadığını kontrol et"""
         return self.current_search_attempts >= self.max_search_attempts
         
+    def _on_question_received(self, event_data: Dict[str, Any]):
+        """Soru alındığında çalışır"""
+        pass
+        
+    def _on_response_generated(self, event_data: Dict[str, Any]):
+        """Yanıt üretildiğinde çalışır"""
+        pass
+        
     def __del__(self):
         """Cleanup"""
-        # Event aboneliklerini temizle
-        self.event_bus.unsubscribe("question_received", self._on_question_received)
-        self.event_bus.unsubscribe("response_generated", self._on_response_generated) 
+        self.event_bus.unsubscribe_all(self._on_question_received)
+        self.event_bus.unsubscribe_all(self._on_response_generated) 

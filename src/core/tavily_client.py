@@ -2,7 +2,7 @@
 import os
 import logging
 from typing import List, Dict, Any, Optional
-import requests
+import aiohttp
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ class TavilyClient:
             "Content-Type": "application/json"
         }
         
-    def search(
+    async def search(
         self,
         query: str,
         search_depth: str = "advanced",
@@ -55,11 +55,12 @@ class TavilyClient:
             if exclude_domains:
                 data["exclude_domains"] = exclude_domains
                 
-            response = requests.post(url, headers=self.headers, json=data)
-            response.raise_for_status()
-            
-            results = response.json().get("results", [])
-            return results[:max_results]
+            async with aiohttp.ClientSession() as session:
+                async with session.post(url, headers=self.headers, json=data) as response:
+                    response.raise_for_status()
+                    result = await response.json()
+                    results = result.get("results", [])
+                    return results[:max_results]
             
         except Exception as e:
             logger.error(f"Tavily arama hatası: {str(e)}")
