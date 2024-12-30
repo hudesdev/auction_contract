@@ -3,7 +3,7 @@ from typing import Dict, Any, Optional
 import logging
 from src.core.expert_base import ExpertBase
 from src.utils.cache import Cache
-from src.core.openai_client import OpenAIClient
+from src.utils.openai_client import OpenAIClient
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +61,7 @@ class AIExpert(ExpertBase):
             Optional[str]: Generated response or None
         """
         system_prompt = """Sen bir yapay zeka uzmanısın.
-        Yapay zeka teknolojileri, uygulamaları, etik konuları ve gelişmeler hakkında detaylı bilgi sahibisin.
+        Yapay zeka teknolojileri, uygulamaları ve etik konularında detaylı bilgi sahibisin.
         Kullanıcının sorduğu yapay zeka ile ilgili soruları yanıtla.
         Eğer soru yapay zeka ile ilgili değilse, bunu belirt."""
         

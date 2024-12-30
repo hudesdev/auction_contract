@@ -2,7 +2,7 @@ from typing import Dict, Any, Optional
 import logging
 from src.core.expert_base import ExpertBase
 from src.utils.cache import Cache
-from src.core.openai_client import OpenAIClient
+from src.utils.openai_client import OpenAIClient
 
 logger = logging.getLogger(__name__)
 

@@ -2,7 +2,7 @@ from typing import Dict, Any, Optional
 import logging
 from src.core.expert_base import ExpertBase
 from src.utils.cache import Cache
-from src.core.openai_client import OpenAIClient
+from src.utils.openai_client import OpenAIClient
 
 logger = logging.getLogger(__name__)
 
@@ -59,10 +59,10 @@ class FoodExpert(ExpertBase):
         Returns:
             Optional[str]: Generated response or None
         """
-        system_prompt = """Sen bir yemek ve mutfak uzmanısın.
-        Yemek tarifleri, mutfak kültürü, beslenme ve diyet konularında detaylı bilgi sahibisin.
+        system_prompt = """Sen bir yemek ve beslenme uzmanısın. 
+        Yemek tarifleri, restoran önerileri ve sağlıklı beslenme konularında detaylı bilgi sahibisin.
         Kullanıcının sorduğu yemek ile ilgili soruları yanıtla.
-        Eğer soru yemek ile ilgili değilse, bunu belirt."""
+        Eğer soru yemekle ilgili değilse, bunu belirt."""
         
         try:
             response = await self.openai_client.get_completion(system_prompt, question)
