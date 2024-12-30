@@ -1,33 +1,47 @@
-from typing import Optional
+"""OpenAI API client"""
 import os
+import logging
+from typing import Optional
 from openai import OpenAI
-from utils.logger import Logger
+
+logger = logging.getLogger(__name__)
 
 class OpenAIClient:
-    """OpenAI API istemcisi"""
+    """OpenAI API client"""
     
     def __init__(self):
-        """OpenAI istemcisini başlat"""
-        self.logger = Logger()
-        self.logger.info("OpenAIClient başlatılıyor...")
+        """Initialize OpenAI client"""
         api_key = os.getenv('OPENAI_API_KEY')
         if not api_key:
-            self.logger.error("OPENAI_API_KEY bulunamadı!")
+            logger.error("OPENAI_API_KEY not found!")
             raise ValueError("OPENAI_API_KEY environment variable is not set")
         self.client = OpenAI(api_key=api_key)
-        self.logger.info("OpenAI client başarıyla oluşturuldu")
+        logger.info("OpenAI client initialized successfully")
         
-    async def get_completion(self, system_prompt: str, user_message: str) -> Optional[str]:
-        """OpenAI API'den yanıt al"""
+    async def get_completion(self, system_prompt: str, user_prompt: str = None) -> Optional[str]:
+        """Get completion from OpenAI API
+        
+        Args:
+            system_prompt (str): System prompt
+            user_prompt (str, optional): User prompt. Defaults to None.
+            
+        Returns:
+            Optional[str]: Generated response or None if error
+        """
         try:
+            messages = [{"role": "system", "content": system_prompt}]
+            if user_prompt:
+                messages.append({"role": "user", "content": user_prompt})
+                
             response = self.client.chat.completions.create(
                 model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_message}
-                ]
+                messages=messages,
+                temperature=0.7,
+                max_tokens=500
             )
-            return response.choices[0].message.content
+            
+            return response.choices[0].message.content.strip()
+            
         except Exception as e:
-            self.logger.error(f"OpenAI API hatası: {str(e)}")
+            logger.error(f"OpenAI API error: {str(e)}")
             return None 

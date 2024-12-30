@@ -1,48 +1,50 @@
-"""Web search functionality using Tavily API"""
+"""Web search client using Tavily API"""
 import os
 import logging
-from typing import Optional
+from typing import List, Optional
 from tavily import TavilyClient
 
 logger = logging.getLogger(__name__)
 
-class WebSearch:
+class WebSearchClient:
+    """Web search client using Tavily API"""
+    
     def __init__(self):
-        """Initialize WebSearch with Tavily API"""
-        self.client = TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
+        """Initialize web search client"""
+        api_key = os.getenv('TAVILY_API_KEY')
+        if not api_key:
+            logger.error("TAVILY_API_KEY not found!")
+            raise ValueError("TAVILY_API_KEY environment variable is not set")
+        self.client = TavilyClient(api_key=api_key)
+        logger.info("Web search client initialized successfully")
         
-    async def search(self, query: str) -> Optional[str]:
-        """Search web using Tavily API
+    async def search(self, query: str, max_results: int = 3) -> Optional[List[str]]:
+        """Perform web search
         
         Args:
             query (str): Search query
+            max_results (int, optional): Maximum number of results. Defaults to 3.
             
         Returns:
-            Optional[str]: Search result or None if not found
+            Optional[List[str]]: List of search results or None if error
         """
         try:
-            # Tavily API'yi kullanarak arama yap
+            # Perform search
             response = self.client.search(
                 query=query,
-                search_depth="advanced",  # Detaylı arama
-                max_results=3,  # En alakalı 3 sonuç
-                language="tr"  # Türkçe sonuçlar
+                search_depth="advanced",
+                max_results=max_results
             )
             
-            if not response or not response.get("results"):
-                logger.warning("No results found from Tavily search")
-                return None
-                
-            # Sonuçları birleştir
-            results = response["results"]
-            content = "\n\n".join([
-                f"Başlık: {result['title']}\n"
-                f"İçerik: {result['content']}"
-                for result in results
-            ])
-            
-            return content
+            # Extract content from results
+            results = []
+            for result in response.get('results', []):
+                content = result.get('content')
+                if content:
+                    results.append(content)
+                    
+            return results if results else None
             
         except Exception as e:
-            logger.error(f"Error in Tavily search: {str(e)}")
+            logger.error(f"Web search error: {str(e)}")
             return None 

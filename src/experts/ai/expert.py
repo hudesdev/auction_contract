@@ -1,54 +1,121 @@
 """AI expert implementation"""
-from typing import Dict, Any, Optional, List
+from typing import Dict, List, Optional, Any
 import logging
-from src.core.expert_base import ExpertBase
-from src.utils.cache import Cache
+from src.core.base_expert import BaseExpert
 from src.utils.openai_client import OpenAIClient
-from .sources.local_data import get_knowledge_base, get_common_questions, find_answer
+from src.utils.web_search import WebSearchClient
+from src.utils.cache import Cache
 
-logger = logging.getLogger(__name__)
-
-class AIExpert(ExpertBase):
+class AIExpert(BaseExpert):
     def __init__(self, config: Dict[str, Any]):
-        """Initialize AIExpert
-        
-        Args:
-            config (Dict[str, Any]): Configuration dictionary
-        """
         super().__init__("ai")
         self.config = config
+        self.openai_client = OpenAIClient()
+        self.web_search = WebSearchClient()
         self.cache = Cache(
             enabled=config["experts"]["ai"]["cache_enabled"],
             ttl=config["experts"]["ai"]["cache_ttl"]
         )
-        self.openai_client = OpenAIClient()
+        self.logger = logging.getLogger(__name__)
         
-        # Load knowledge base
-        self.knowledge_base = get_knowledge_base()
-        self.common_questions = get_common_questions()
+    async def determine_category(self, query: str) -> str:
+        """Determine which expert category the query belongs to"""
+        system_prompt = """Analyze the given query and determine which expert category it belongs to.
+        Available categories: ai, food, sports, sudostar
+        Return only the category name in lowercase."""
         
-    async def find_answer(self, question: str) -> Optional[str]:
-        """Find answer in local knowledge base
-        
-        Args:
-            question (str): User's question
+        try:
+            category = await self.openai_client.get_completion(system_prompt, query)
+            return category.strip().lower()
+        except Exception as e:
+            self.logger.error(f"Error determining category: {str(e)}")
+            return "ai"  # Default to AI expert if categorization fails
             
-        Returns:
-            Optional[str]: Answer if found in local data
-        """
-        return find_answer(question)
+    async def get_response(self, query: str) -> Optional[str]:
+        """Main response generation pipeline"""
+        try:
+            # Check cache first
+            cached_response = self.cache.get(query)
+            if cached_response:
+                return cached_response
+                
+            # Step 1: Determine category and route to appropriate expert
+            category = await self.determine_category(query)
+            if category != "ai":
+                return f"This query should be handled by the {category} expert."
+                
+            # Step 2: Check local knowledge base
+            local_response = await self._check_local_knowledge(query)
+            if local_response:
+                self.cache.set(query, local_response)
+                return local_response
+                
+            # Step 3: Check URL sources
+            url_response = await self._check_url_sources(query)
+            if url_response:
+                self.cache.set(query, url_response)
+                return url_response
+                
+            # Step 4: Generate response using OpenAI
+            ai_response = await self._generate_ai_response(query)
+            if ai_response:
+                self.cache.set(query, ai_response)
+                return ai_response
+                
+            # Step 5: Web search as last resort
+            web_response = await self._perform_web_search(query)
+            if web_response:
+                self.cache.set(query, web_response)
+                return web_response
+                
+            # Step 6: Fallback response
+            return "I apologize, but I couldn't find a satisfactory answer to your question. Could you please rephrase or provide more details?"
+            
+        except Exception as e:
+            self.logger.error(f"Error in get_response: {str(e)}")
+            return "I encountered an error while processing your request. Please try again."
+            
+    async def _check_local_knowledge(self, query: str) -> Optional[str]:
+        """Check local knowledge base for relevant information"""
+        # Implementation will be added
+        return None
         
-    def _get_expert_urls(self) -> List[str]:
-        """Get AI related URLs
+    async def _check_url_sources(self, query: str) -> Optional[str]:
+        """Check URL sources for relevant information"""
+        # Implementation will be added
+        return None
         
-        Returns:
-            List[str]: List of AI URLs
-        """
-        return [
-            "https://openai.com/blog",  # OpenAI Blog
-            "https://www.deeplearning.ai",  # DeepLearning.AI
-            "https://www.tensorflow.org",  # TensorFlow
-            "https://pytorch.org",  # PyTorch
-            "https://huggingface.co/blog",  # Hugging Face Blog
-            "https://www.fast.ai"  # Fast.ai
-        ] 
+    async def _generate_ai_response(self, query: str) -> Optional[str]:
+        """Generate response using OpenAI"""
+        system_prompt = """You are an AI expert assistant. Provide accurate and helpful responses
+        based on your knowledge. If you're not confident about the answer, indicate that."""
+        
+        try:
+            response = await self.openai_client.get_completion(system_prompt, query)
+            return response
+        except Exception as e:
+            self.logger.error(f"Error generating AI response: {str(e)}")
+            return None
+            
+    async def _perform_web_search(self, query: str) -> Optional[str]:
+        """Perform web search and generate response based on results"""
+        try:
+            search_results = await self.web_search.search(query)
+            if not search_results:
+                return None
+                
+            # Generate response based on search results
+            context = "\n".join(search_results[:3])  # Use top 3 results
+            system_prompt = """Based on the following search results, generate a comprehensive
+            and accurate response to the user's query. If the search results are not relevant
+            or reliable, indicate that."""
+            
+            response = await self.openai_client.get_completion(
+                system_prompt,
+                f"Query: {query}\n\nSearch Results: {context}"
+            )
+            return response
+            
+        except Exception as e:
+            self.logger.error(f"Error in web search: {str(e)}")
+            return None 

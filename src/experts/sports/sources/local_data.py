@@ -1,105 +1,97 @@
-"""Sports expert için yerel veri kaynağı"""
+"""Local knowledge base for sports expert"""
+import os
+import json
 from typing import Dict, Optional
 
-SPORTS_KNOWLEDGE_BASE = {
-    "futbol": {
-        "galatasaray": {
-            "kuruluş": "1905",
-            "renkler": "Sarı-Kırmızı",
-            "stadyum": "NEF Stadyumu",
-            "başarılar": {
-                "süper_lig": "23 kez şampiyon",
-                "türkiye_kupası": "18 kez şampiyon",
-                "uefa_kupası": "2000 yılında Arsenal'i penaltılarla yenerek kazandı",
-                "süper_kupa": "16 kez kazandı"
-            }
-        },
-        "fenerbahçe": {
-            "kuruluş": "1907",
-            "renkler": "Sarı-Lacivert",
-            "stadyum": "Şükrü Saracoğlu Stadyumu",
-            "başarılar": {
-                "süper_lig": "19 kez şampiyon",
-                "türkiye_kupası": "6 kez şampiyon",
-                "süper_kupa": "9 kez kazandı"
-            }
-        },
-        "beşiktaş": {
-            "kuruluş": "1903",
-            "renkler": "Siyah-Beyaz",
-            "stadyum": "Vodafone Park",
-            "başarılar": {
-                "süper_lig": "16 kez şampiyon",
-                "türkiye_kupası": "10 kez şampiyon",
-                "süper_kupa": "8 kez kazandı"
+def get_knowledge_base() -> Dict:
+    """Load and return sports knowledge base"""
+    kb_path = os.path.join(os.path.dirname(__file__), "data", "knowledge_base.json")
+    try:
+        with open(kb_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {
+            "football": {
+                "teams": {
+                    "galatasaray": {
+                        "name": "Galatasaray",
+                        "founded": 1905,
+                        "stadium": "NEF Arena",
+                        "titles": {
+                            "super_lig": 23,
+                            "turkish_cup": 18,
+                            "uefa_cup": 1
+                        }
+                    },
+                    "fenerbahce": {
+                        "name": "Fenerbahçe",
+                        "founded": 1907,
+                        "stadium": "Şükrü Saracoğlu",
+                        "titles": {
+                            "super_lig": 19,
+                            "turkish_cup": 6
+                        }
+                    }
+                }
             }
         }
-    },
-    "basketbol": {
-        "news": [
-            "Anadolu Efes Euroleague'de başarılı performans gösteriyor.",
-            "12 Dev Adam milli maçlara hazırlanıyor."
-        ],
-        "history": [
-            "Türkiye Basketbol Milli Takımı, 2010 Dünya Şampiyonası'nda gümüş madalya kazandı.",
-            "Fenerbahçe, 2017'de Euroleague şampiyonu oldu."
-        ]
-    }
-}
-
-COMMON_QUESTIONS = {
-    "Galatasaray kaç yılında UEFA kupasını kazandı?": "Galatasaray, 2000 yılında Arsenal'i penaltılarla yenerek UEFA kupasını kazandı.",
-    "Fenerbahçe kaç kez şampiyon oldu?": "Fenerbahçe Süper Lig'de 19 kez şampiyon oldu.",
-    "Beşiktaş'ın stadı nerede?": "Beşiktaş'ın stadı Vodafone Park'tır.",
-    "Türk basketbol tarihinin en büyük başarısı nedir?": "Türkiye Basketbol Milli Takımı'nın 2010 Dünya Şampiyonası'nda kazandığı gümüş madalya en büyük başarılardan biridir."
-}
-
-def get_knowledge_base() -> Dict:
-    """Get sports knowledge base
-    
-    Returns:
-        Dict: Sports knowledge base
-    """
-    return SPORTS_KNOWLEDGE_BASE
 
 def get_common_questions() -> Dict[str, str]:
-    """Get common questions and answers
-    
-    Returns:
-        Dict[str, str]: Common questions and answers
-    """
-    return COMMON_QUESTIONS
+    """Load and return common sports questions"""
+    qa_path = os.path.join(os.path.dirname(__file__), "data", "common_questions.json")
+    try:
+        with open(qa_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {
+            "galatasaray_uefa": "Galatasaray UEFA Kupası'nı 2000 yılında kazanmıştır.",
+            "fb_gs_derby": "Fenerbahçe-Galatasaray derbisi Türkiye'nin en büyük futbol rekabetlerinden biridir.",
+            "super_lig_champion": "En çok şampiyonluğu olan takım 23 şampiyonlukla Galatasaray'dır."
+        }
 
-def find_answer(question: str) -> Optional[str]:
-    """Find answer for the given question
+def find_answer(question: str, knowledge_base: Optional[Dict] = None) -> Optional[str]:
+    """Find answer in knowledge base
     
     Args:
-        question (str): Question to find answer for
+        question (str): User's question
+        knowledge_base (Optional[Dict]): Optional knowledge base to search in
         
     Returns:
-        Optional[str]: Answer if found, None otherwise
+        Optional[str]: Answer if found
     """
-    # Önce yaygın sorularda ara
-    if question in COMMON_QUESTIONS:
-        return COMMON_QUESTIONS[question]
+    if knowledge_base is None:
+        knowledge_base = get_knowledge_base()
         
-    # Bilgi tabanında ara
+    # Check common questions first
+    common_questions = get_common_questions()
+    for q, a in common_questions.items():
+        if any(word in question.lower() for word in q.lower().split("_")):
+            return a
+            
+    # Check knowledge base
     question = question.lower()
     
-    # Galatasaray UEFA kupası sorusu
-    if "galatasaray" in question and "uefa" in question:
-        return SPORTS_KNOWLEDGE_BASE["futbol"]["galatasaray"]["başarılar"]["uefa_kupası"]
-        
-    # Fenerbahçe şampiyonluk sorusu
-    if "fenerbahçe" in question and "şampiyon" in question:
-        return SPORTS_KNOWLEDGE_BASE["futbol"]["fenerbahçe"]["başarılar"]["süper_lig"]
-        
-    # Beşiktaş stad sorusu
-    if "beşiktaş" in question and "stad" in question:
-        return SPORTS_KNOWLEDGE_BASE["futbol"]["beşiktaş"]["stadyum"]
-        
-    # Basketbol başarısı sorusu
-    if "basketbol" in question and "başarı" in question:
-        return SPORTS_KNOWLEDGE_BASE["basketbol"]["history"][0]
-        
+    # Check football teams
+    if "football" in knowledge_base:
+        teams = knowledge_base["football"]["teams"]
+        for team_key, team_data in teams.items():
+            if team_key in question:
+                # Questions about founding year
+                if any(word in question for word in ["founded", "kuruldu", "kuruluş"]):
+                    return f"{team_data['name']} {team_data['founded']} yılında kurulmuştur."
+                    
+                # Questions about stadium
+                if any(word in question for word in ["stadium", "stadyum", "stat"]):
+                    return f"{team_data['name']}'ın stadyumu {team_data['stadium']}'dır."
+                    
+                # Questions about titles
+                if any(word in question for word in ["titles", "şampiyonluk", "kupa"]):
+                    titles = team_data["titles"]
+                    return (
+                        f"{team_data['name']}'ın kazandığı kupalar:\n"
+                        f"Süper Lig: {titles.get('super_lig', 0)}\n"
+                        f"Türkiye Kupası: {titles.get('turkish_cup', 0)}\n"
+                        f"UEFA Kupası: {titles.get('uefa_cup', 0)}"
+                    )
+                    
     return None 

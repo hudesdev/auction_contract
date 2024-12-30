@@ -47,7 +47,7 @@ class ExpertSelector:
                 confidence = result.get("confidence", 0.0)
                 
                 # Güven skoru yeterli mi kontrol et
-                if confidence >= 0.7:
+                if confidence >= 0.5:
                     return expert
                 return None
                 

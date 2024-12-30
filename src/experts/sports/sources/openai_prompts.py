@@ -1,22 +1,39 @@
-"""Sports Expert için OpenAI promptları"""
+"""OpenAI prompts for sports expert"""
+import logging
+from typing import Optional
+from src.utils.openai_client import OpenAIClient
 
-SYSTEM_PROMPTS = {
-    "general": """Sen bir spor uzmanısın. Futbol, basketbol ve diğer spor dalları 
-    hakkında derin bilgiye sahipsin. Maç sonuçları, analizler ve spor haberleri 
-    konusunda bilgi verebilirsin.""",
-    
-    "football": """Sen bir futbol uzmanısın. Maç sonuçları, taktik analizler, 
-    transfer haberleri ve futbol tarihi konusunda detaylı bilgi sahibisin.""",
-    
-    "basketball": """Sen bir basketbol uzmanısın. NBA, Euroleague ve yerel ligler 
-    hakkında detaylı bilgi verebilirsin. Oyuncu istatistikleri ve maç analizleri 
-    konusunda uzmansın.""",
-    
-    "training": """Sen bir spor antrenörüsün. Farklı spor dalları için antrenman 
-    programları, beslenme önerileri ve performans geliştirme teknikleri konusunda 
-    bilgi sahibisin."""
-}
+logger = logging.getLogger(__name__)
 
-def get_system_prompt(category: str = "general") -> str:
-    """Belirtilen kategori için sistem promptunu döndür"""
-    return SYSTEM_PROMPTS.get(category, SYSTEM_PROMPTS["general"]) 
+async def get_openai_response(question: str) -> Optional[str]:
+    """Get response from OpenAI
+    
+    Args:
+        question (str): User's question
+        
+    Returns:
+        Optional[str]: Response if found, None otherwise
+    """
+    try:
+        client = OpenAIClient()
+        
+        system_prompt = """Sen bir spor uzmanısın.
+        Futbol, basketbol, voleybol ve diğer sporlar hakkında detaylı bilgi sahibisin.
+        Türk ve dünya sporuna hakimsin.
+        Soruları kısa ve öz bir şekilde yanıtla."""
+        
+        user_prompt = f"Soru: {question}\n\nYanıt:"
+        
+        response = await client.get_completion(
+            system_prompt=system_prompt,
+            user_prompt=user_prompt
+        )
+        
+        if response and len(response.strip()) > 0:
+            return response.strip()
+            
+        return None
+        
+    except Exception as e:
+        logger.error(f"Error getting OpenAI response: {str(e)}")
+        return None 

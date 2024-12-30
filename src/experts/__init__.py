@@ -1,7 +1,7 @@
-"""Expert modules"""
-from src.experts.sports.expert import SportsExpert
-from src.experts.food.expert import FoodExpert
-from src.experts.ai.expert import AIExpert
-from src.experts.sudostar.expert import SudoStarExpert
+"""Experts package"""
+from .ai.expert import AIExpert
+from .food.expert import FoodExpert
+from .sports.expert import SportsExpert
+from .sudostar.expert import SudoStarExpert
 
-__all__ = ['SportsExpert', 'FoodExpert', 'AIExpert', 'SudoStarExpert'] 
+__all__ = ['AIExpert', 'FoodExpert', 'SportsExpert', 'SudoStarExpert'] 

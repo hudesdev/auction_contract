@@ -1,49 +1,74 @@
-"""Food Expert için URL kaynakları"""
+"""URL sources for food expert"""
+import os
+import json
+import logging
+import aiohttp
+from typing import Dict, List, Optional
 
-FOOD_URLS = {
-    "recipes": {
-        "turkish": [
-            "https://www.nefisyemektarifleri.com/",
-            "https://yemek.com/",
-            "https://www.ardaninmutfagi.com/"
-        ],
-        "international": [
-            "https://www.allrecipes.com/",
-            "https://www.foodnetwork.com/",
-            "https://www.epicurious.com/"
-        ]
-    },
-    "restaurants": {
-        "reviews": [
-            "https://www.tripadvisor.com/Restaurants",
-            "https://www.zomato.com/",
-            "https://www.yelp.com/restaurants"
-        ],
-        "guides": [
-            "https://guide.michelin.com/",
-            "https://www.theworlds50best.com/",
-            "https://www.eater.com/"
-        ]
-    },
-    "diet": {
-        "nutrition": [
-            "https://www.nutritionix.com/",
-            "https://www.myfitnesspal.com/",
-            "https://www.eatright.org/"
-        ],
-        "health": [
-            "https://www.healthline.com/nutrition",
-            "https://www.webmd.com/diet/",
-            "https://www.mayoclinic.org/healthy-lifestyle/nutrition-and-healthy-eating"
-        ]
-    }
-}
+logger = logging.getLogger(__name__)
 
-def get_urls(category: str, subcategory: str = None) -> list:
-    """Belirtilen kategori için URL'leri döndür"""
-    if subcategory:
-        return FOOD_URLS.get(category, {}).get(subcategory, [])
-    urls = []
-    for subcats in FOOD_URLS.get(category, {}).values():
-        urls.extend(subcats)
-    return urls 
+def get_url_sources() -> Dict[str, List[str]]:
+    """Load and return food related URLs"""
+    urls_path = os.path.join(os.path.dirname(__file__), "data", "url_sources.json")
+    try:
+        with open(urls_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {
+            "recipes": [
+                "https://www.nefisyemektarifleri.com",
+                "https://yemek.com",
+                "https://www.lezzet.com.tr"
+            ],
+            "nutrition": [
+                "https://www.diyetkolik.com",
+                "https://www.saglikli-beslenme.org"
+            ],
+            "restaurants": [
+                "https://www.tripadvisor.com.tr/Restaurants",
+                "https://www.zomato.com/tr"
+            ]
+        }
+
+async def fetch_url_content(url: str) -> Optional[str]:
+    """Fetch content from URL
+    
+    Args:
+        url (str): URL to fetch
+        
+    Returns:
+        Optional[str]: Content if successful
+    """
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                if response.status == 200:
+                    return await response.text()
+    except Exception as e:
+        logger.error(f"Error fetching URL {url}: {str(e)}")
+    return None
+
+async def search_url_sources(query: str) -> Optional[str]:
+    """Search URL sources for relevant information
+    
+    Args:
+        query (str): Search query
+        
+    Returns:
+        Optional[str]: Relevant information if found
+    """
+    urls = get_url_sources()
+    
+    # Fetch content from relevant URLs
+    relevant_content = []
+    for category, url_list in urls.items():
+        for url in url_list:
+            content = await fetch_url_content(url)
+            if content and query.lower() in content.lower():
+                relevant_content.append(content)
+                
+    if relevant_content:
+        # TODO: Implement better content extraction and summarization
+        return "\n".join(relevant_content[:3])  # Return first 3 matches
+        
+    return None 

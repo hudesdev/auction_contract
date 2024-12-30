@@ -1,32 +1,74 @@
-"""AI konuları için URL kaynakları"""
+"""URL sources for AI expert"""
+from typing import Dict, List, Optional
+import json
+import os
+import aiohttp
+import logging
 
-URL_SOURCES = {
-    "general": [
-        "https://www.yapayzekatr.com/yapay-zeka-nedir/",
-        "https://www.ibm.com/tr-tr/topics/artificial-intelligence",
-        "https://aws.amazon.com/tr/machine-learning/what-is-ai/",
-        "https://www.microsoft.com/tr-tr/ai"
-    ],
-    "models": [
-        "https://openai.com/gpt-4",
-        "https://huggingface.co/docs/transformers/model_doc/bert",
-        "https://ai.meta.com/llama/",
-        "https://stability.ai/stable-diffusion"
-    ],
-    "applications": [
-        "https://www.ibm.com/tr-tr/watson",
-        "https://cloud.google.com/ai-platform",
-        "https://azure.microsoft.com/tr-tr/solutions/ai/",
-        "https://aws.amazon.com/tr/machine-learning/"
-    ],
-    "ethics": [
-        "https://www.unesco.org/en/artificial-intelligence/recommendation-ethics",
-        "https://www.tubitak.gov.tr/tr/yapay-zeka-etik-ilkeleri",
-        "https://www.europarl.europa.eu/news/en/headlines/society/20230601STO93804/eu-ai-act-first-regulation-on-artificial-intelligence",
-        "https://www.who.int/news/item/28-06-2021-who-issues-first-global-report-on-ai-in-health"
-    ]
-}
+logger = logging.getLogger(__name__)
 
-def get_url_sources() -> dict:
-    """URL kaynaklarını döndür"""
-    return URL_SOURCES 
+def get_url_sources() -> Dict[str, List[str]]:
+    """Load and return AI related URLs"""
+    urls_path = os.path.join(os.path.dirname(__file__), "data", "url_sources.json")
+    try:
+        with open(urls_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {
+            "general": [
+                "https://openai.com/blog",
+                "https://www.deeplearning.ai",
+                "https://www.tensorflow.org"
+            ],
+            "news": [
+                "https://www.artificialintelligence-news.com",
+                "https://www.ai-trends.com"
+            ],
+            "research": [
+                "https://arxiv.org/list/cs.AI/recent",
+                "https://paperswithcode.com"
+            ]
+        }
+
+async def fetch_url_content(url: str) -> Optional[str]:
+    """Fetch content from URL
+    
+    Args:
+        url (str): URL to fetch
+        
+    Returns:
+        Optional[str]: Content if successful
+    """
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                if response.status == 200:
+                    return await response.text()
+    except Exception as e:
+        logger.error(f"Error fetching URL {url}: {str(e)}")
+    return None
+
+async def search_url_sources(query: str) -> Optional[str]:
+    """Search URL sources for relevant information
+    
+    Args:
+        query (str): Search query
+        
+    Returns:
+        Optional[str]: Relevant information if found
+    """
+    urls = get_url_sources()
+    
+    # Fetch content from relevant URLs
+    relevant_content = []
+    for category, url_list in urls.items():
+        for url in url_list:
+            content = await fetch_url_content(url)
+            if content and query.lower() in content.lower():
+                relevant_content.append(content)
+                
+    if relevant_content:
+        # TODO: Implement better content extraction and summarization
+        return "\n".join(relevant_content[:3])  # Return first 3 matches
+        
+    return None 
