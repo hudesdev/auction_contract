@@ -61,29 +61,36 @@ class TelegramBot:
         logger.info(f"Received question: {question}")
         
         try:
-            # Uzman seç
-            expert_type = await self.expert_selector.select_expert(question)
+            # Uzman seç veya direkt yanıt al
+            expert_type, direct_response = await self.expert_selector.select_expert(question)
             logger.info(f"Selected expert: {expert_type}")
             
-            if expert_type == "sports":
-                logger.info("Using sports expert")
-                response = await self.sports_expert.get_response(question)
-                logger.info(f"Sports expert response: {response}")
-            elif expert_type == "food":
-                logger.info("Using food expert")
-                response = await self.food_expert.get_response(question)
-                logger.info(f"Food expert response: {response}")
-            elif expert_type == "ai":
-                logger.info("Using AI expert")
-                response = await self.ai_expert.get_response(question)
-                logger.info(f"AI expert response: {response}")
-            elif expert_type == "sudostar":
-                logger.info("Using SudoStar expert")
-                response = await self.sudostar_expert.get_response(question)
-                logger.info(f"SudoStar expert response: {response}")
+            # Eğer bir expert seçildiyse
+            if expert_type:
+                if expert_type == "sports":
+                    logger.info("Using sports expert")
+                    response = await self.sports_expert.get_response(question)
+                    logger.info(f"Sports expert response: {response}")
+                elif expert_type == "food":
+                    logger.info("Using food expert")
+                    response = await self.food_expert.get_response(question)
+                    logger.info(f"Food expert response: {response}")
+                elif expert_type == "ai":
+                    logger.info("Using AI expert")
+                    response = await self.ai_expert.get_response(question)
+                    logger.info(f"AI expert response: {response}")
+                elif expert_type == "sudostar":
+                    logger.info("Using SudoStar expert")
+                    response = await self.sudostar_expert.get_response(question)
+                    logger.info(f"SudoStar expert response: {response}")
+                else:
+                    logger.warning(f"No expert found for type: {expert_type}")
+                    response = None
+            # Expert seçilmediyse direct_response'u kullan
             else:
-                logger.warning(f"No expert found for type: {expert_type}")
-                response = None
+                logger.info("Using direct response")
+                response = direct_response
+                logger.info(f"Direct response: {response}")
                 
             if response:
                 await update.message.reply_text(response)
@@ -91,8 +98,7 @@ class TelegramBot:
                 logger.warning("No response generated")
                 await update.message.reply_text(
                     "Üzgünüm, sorunuzu yanıtlayamadım. "
-                    "Lütfen sorunuzu daha açık bir şekilde ifade edin veya "
-                    "spor, yemek, yapay zeka ya da SudoStar konularında bir soru sorun."
+                    "Lütfen sorunuzu daha açık bir şekilde ifade edin."
                 )
                 
         except Exception as e:
