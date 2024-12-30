@@ -1,3 +1,4 @@
+"""Logging utilities"""
 import logging
 
 class Logger:
@@ -22,4 +23,16 @@ class Logger:
         self.logger.warning(message)
         
     def debug(self, message):
-        self.logger.debug(message) 
+        self.logger.debug(message)
+
+def setup_logger(name=None, level=logging.INFO):
+    """Setup and return a logger instance
+    
+    Args:
+        name (str, optional): Logger name. Defaults to None.
+        level (int, optional): Logging level. Defaults to logging.INFO.
+        
+    Returns:
+        Logger: Configured logger instance
+    """
+    return Logger(name) 
