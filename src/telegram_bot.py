@@ -116,19 +116,18 @@ class TelegramBot:
                 pool_timeout=30
             )
             
-            # Sonsuz döngü ile bot'u çalışır durumda tut
-            try:
-                await self.application.updater.running
-            except Exception as running_error:
-                logger.error(f"Error in running loop: {str(running_error)}")
-                raise running_error
+            # Bot'u çalışır durumda tut
+            while True:
+                if not self.application.running:
+                    break
+                await asyncio.sleep(1)
                 
         except Exception as e:
             logger.error(f"Error running bot: {str(e)}")
             if self.application:
                 try:
-                    await self.application.stop()
-                    await self.application.shutdown()
+                    if self.application.running:
+                        await self.application.stop()
                 except Exception as stop_error:
                     logger.error(f"Error stopping application: {str(stop_error)}")
             raise e
@@ -142,10 +141,9 @@ async def main():
     except Exception as e:
         logger.error(f"Failed to start bot: {str(e)}")
     finally:
-        if bot and bot.application:
+        if bot and bot.application and bot.application.running:
             try:
                 await bot.application.stop()
-                await bot.application.shutdown()
             except Exception as shutdown_error:
                 logger.error(f"Error during shutdown: {str(shutdown_error)}")
         
