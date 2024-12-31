@@ -31,21 +31,8 @@ except Exception as e:
     sudostar_expert = None
     expert_selector = None
 
-# Initialize Telegram bot only if TELEGRAM_BOT_TOKEN is set
-if os.getenv("TELEGRAM_BOT_TOKEN"):
-    try:
-        from src.telegram_bot import TelegramBot
-        telegram_bot = TelegramBot()
-        
-        # Start Telegram bot in a separate thread
-        def run_telegram_bot():
-            asyncio.run(telegram_bot.run())
-
-        import threading
-        telegram_thread = threading.Thread(target=run_telegram_bot, daemon=True)
-        telegram_thread.start()
-    except Exception as e:
-        print(f"Error starting Telegram bot: {str(e)}")
+# Telegram bot is temporarily disabled
+telegram_status = 'disabled'
 
 @app.route('/')
 def home():
@@ -61,7 +48,6 @@ def home():
 @app.route('/health')
 def health():
     expert_status = 'running' if expert_selector is not None else 'error'
-    telegram_status = 'running' if os.getenv("TELEGRAM_BOT_TOKEN") else 'disabled'
     
     return jsonify({
         'status': 'healthy',
