@@ -4,7 +4,7 @@
         "builder": "NIXPACKS"
     },
     "deploy": {
-        "startCommand": "gunicorn app:app",
+        "startCommand": "gunicorn --worker-class=gevent --workers=2 app:app",
         "restartPolicyType": "ON_FAILURE",
         "restartPolicyMaxRetries": 10
     }

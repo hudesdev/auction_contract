@@ -7,3 +7,4 @@ gunicorn==21.2.0
 tweepy==4.14.0
 tavily-python==0.3.1
 aiohttp==3.9.1
+gevent==23.9.1
