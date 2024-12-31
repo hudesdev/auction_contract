@@ -1,150 +1,134 @@
-from typing import Dict, List, Optional, Any
-from src.core.base_expert import BaseExpert
-from .sources import (
-    get_knowledge_base,
-    get_common_questions,
-    get_search_queries,
-    get_system_prompt,
-    get_url_sources
-)
-from src.utils.cache import Cache
-from src.utils.openai_client import OpenAIClient
+"""SudoStar expert module"""
+import logging
+from typing import Optional
+from src.experts.base_expert import BaseExpert
+from src.utils.event_bus import EventBus
+from src.utils.web_search import WebSearch
+from .sources.local_data import SUDOSTAR_KNOWLEDGE_BASE
+from .sources.url_sources import get_url_sources
+from .sources.search_queries import get_search_queries
+from .sources.openai_prompts import get_system_prompt
 
 class SudoStarExpert(BaseExpert):
-    def __init__(self, config: Dict[str, Any]):
-        """Initialize SudoStarExpert
+    """Expert for handling SudoStar-related queries"""
+    
+    def __init__(self, config):
+        """Initialize SudoStar expert
         
         Args:
-            config (Dict[str, Any]): Configuration dictionary
+            config: Expert configuration
         """
-        super().__init__("sudostar")
-        self.config = config
-        self.cache = Cache(
-            enabled=config["experts"]["sudostar"]["cache_enabled"],
-            ttl=config["experts"]["sudostar"]["cache_ttl"]
-        )
-        self.openai_client = OpenAIClient()
+        super().__init__(config)
+        self.event_bus = EventBus()
+        self.knowledge_base = SUDOSTAR_KNOWLEDGE_BASE
+        self.web_search = WebSearch()
         
-        # Load knowledge base
-        self.knowledge_base = get_knowledge_base()
-        self.common_questions = get_common_questions()
-        self.search_queries = get_search_queries()
-        self.url_sources = get_url_sources()
+        # Subscribe to events
+        self.event_bus.subscribe('question_received', self._on_question_received)
+        self.event_bus.subscribe('response_generated', self._on_response_generated)
         
-    async def get_response(self, question: str) -> Optional[str]:
-        """Get response for SudoStar related question
+    async def get_response(self, query: str) -> Optional[str]:
+        """Generate response for SudoStar query
         
         Args:
-            question (str): User's question
+            query (str): User query
             
         Returns:
-            Optional[str]: Response or None if no answer found
+            Optional[str]: Generated response or None if failed
         """
         try:
             # Check cache first
-            cached_response = self.cache.get(question)
-            if cached_response:
-                self.logger.info("Cache hit for question: %s", question)
-                return cached_response
+            if self.cache:
+                cached_response = self.cache.get(query)
+                if cached_response:
+                    return cached_response
+                    
+            # Check local knowledge base
+            local_response = await self._check_local_knowledge(query)
+            if local_response:
+                if self.cache:
+                    self.cache.set(query, local_response)
+                return local_response
                 
-            # Check common questions
-            if question in self.common_questions:
-                response = self.common_questions[question]
-                self.cache.set(question, response)
-                return response
-                
-            # Check knowledge base
-            kb = self.knowledge_base
-            if "ödemeler" in question.lower() or "para" in question.lower():
-                payment_info = kb.get("rewards_system", {}).get("diamonds", {}).get("payment_processing", {})
-                response = f"Ödemeler {payment_info.get('processing_time', '1-3 gün')} içinde hesabınıza aktarılır."
-                self.cache.set(question, response)
-                return response
-            elif "elmas" in question.lower():
-                diamonds = kb.get("rewards_system", {}).get("diamonds", {})
-                conversion = diamonds.get("conversion_rate", {})
-                response = f"Her {conversion.get('diamonds_per_dollar', 5000)} elmas 1 USD'ye eşittir. Minimum çekim miktarı {conversion.get('minimum_withdrawal', 25000)} elmastır."
-                self.cache.set(question, response)
-                return response
+            # Check URL sources
+            url_response = await self._check_url_sources(query)
+            if url_response:
+                if self.cache:
+                    self.cache.set(query, url_response)
+                return url_response
                 
             # Generate response using OpenAI
-            response = await self._generate_response(question)
-            
-            # Cache the response
-            if response:
-                self.cache.set(question, response)
+            system_prompt = get_system_prompt()
+            ai_response = await self.openai_client.get_completion(system_prompt, query)
+            if ai_response:
+                if self.cache:
+                    self.cache.set(query, ai_response)
+                return ai_response
                 
-            return response
+            # Perform web search as last resort
+            web_response = await self._perform_web_search(query)
+            if web_response:
+                if self.cache:
+                    self.cache.set(query, web_response)
+                return web_response
+                
+            return "Üzgünüm, bu SudoStar sorusuna yanıt üretemiyorum. Lütfen soruyu daha açık bir şekilde sorar mısınız?"
             
         except Exception as e:
-            self.logger.error("Error getting SudoStar response: %s", str(e))
+            self.logger.error(f"Error generating SudoStar response: {str(e)}")
             return None
             
-    async def _generate_response(self, question: str) -> Optional[str]:
-        """Generate response using OpenAI
+    async def _check_url_sources(self, query: str) -> Optional[str]:
+        """Check URL sources for answer
         
         Args:
-            question (str): User's question
+            query (str): User query
             
         Returns:
-            Optional[str]: Generated response or None
+            Optional[str]: Response from URL sources or None
         """
-        system_prompt = """Sen bir SudoStar uzmanısın.
-        SudoStar mobil uygulamasının özellikleri, ödeme sistemi ve elmas sistemi hakkında detaylı bilgi sahibisin.
-        Kullanıcının sorduğu SudoStar ile ilgili soruları yanıtla.
-        Eğer soru SudoStar ile ilgili değilse, bunu belirt."""
-        
         try:
-            response = await self.openai_client.get_completion(system_prompt, question)
-            return response
-        except Exception as e:
-            self.logger.error("Error generating SudoStar response: %s", str(e))
+            urls = get_url_sources()
+            for url in urls:
+                # URL'den bilgi çek ve yanıt oluştur
+                pass
             return None
-
-    def get_expert_info(self) -> Dict:
-        """Returns basic information about the SudoStar expert."""
-        return {
-            "name": "SudoStar Expert",
-            "description": "Expert in SudoStar mobile application features, capabilities, and best practices",
-            "capabilities": [
-                "Provide detailed information about SudoStar features",
-                "Help with technical setup and configuration",
-                "Offer best practices for social media automation",
-                "Assist with troubleshooting common issues",
-                "Guide users through platform integrations"
-            ]
-        }
-
-    def get_relevant_context(self, query: str) -> Dict:
-        """Returns relevant context based on the user's query."""
-        context = {
-            "knowledge_base": self._filter_relevant_knowledge(query),
-            "common_questions": self._find_related_questions(query),
-            "urls": self._get_relevant_urls(query)
-        }
-        return context
-
-    def _filter_relevant_knowledge(self, query: str) -> Dict:
-        """Filters and returns relevant knowledge based on the query."""
-        # In a real implementation, this would use more sophisticated
-        # matching algorithms. For now, we return the full knowledge base
-        return self.knowledge_base
-
-    def _find_related_questions(self, query: str) -> Dict[str, str]:
-        """Finds and returns related common questions and answers."""
-        # In a real implementation, this would use semantic matching
-        return self.common_questions
-
-    def _get_relevant_urls(self, query: str) -> Dict:
-        """Returns relevant URLs based on the query context."""
-        # In a real implementation, this would filter based on query context
-        return self.url_sources
-
-    def get_system_prompt(self, context: Optional[str] = None) -> str:
-        """Returns the appropriate system prompt based on context."""
-        prompt_type = "general_expert"
-        if context and "technical" in context.lower():
-            prompt_type = "technical_support"
-        elif context and "feature" in context.lower():
-            prompt_type = "feature_expert"
-        return get_system_prompt(prompt_type) 
+        except Exception as e:
+            self.logger.error(f"Error checking URL sources: {str(e)}")
+            return None
+            
+    async def _perform_web_search(self, query: str) -> Optional[str]:
+        """Perform web search for answer
+        
+        Args:
+            query (str): User query
+            
+        Returns:
+            Optional[str]: Response from web search or None
+        """
+        try:
+            search_queries = get_search_queries("pricing")
+            for search_query in search_queries:
+                results = await self.web_search.search(f"{search_query} {query}")
+                if results:
+                    return results[0]
+            return None
+        except Exception as e:
+            self.logger.error(f"Error performing web search: {str(e)}")
+            return None
+            
+    async def _on_question_received(self, question: str) -> None:
+        """Handle received question event
+        
+        Args:
+            question (str): Received question
+        """
+        self.logger.info(f"SudoStar expert received question: {question}")
+        
+    async def _on_response_generated(self, response: str) -> None:
+        """Handle generated response event
+        
+        Args:
+            response (str): Generated response
+        """
+        self.logger.info(f"SudoStar expert generated response: {response}") 

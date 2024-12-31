@@ -3,6 +3,9 @@ from flask_cors import CORS
 import os
 import logging
 from dotenv import load_dotenv
+from src.experts import SportsExpert, FoodExpert, AIExpert, SudoStarExpert
+from src.core.expert_selector import ExpertSelector
+from config.config import EXPERT_CONFIG, APP_CONFIG
 
 # Configure logging
 logging.basicConfig(
@@ -35,27 +38,11 @@ def init_app():
             
         # Initialize expert system only if needed
         if expert_system is None:
-            from src.experts import SportsExpert, FoodExpert, AIExpert, SudoStarExpert
-            from src.core.expert_selector import ExpertSelector
-            from src.utils.config import ConfigLoader
-            
-            config = {
-                "api_keys": {
-                    "openai": openai_api_key
-                },
-                "experts": {
-                    "sports": {"openai": {"model": "gpt-4"}},
-                    "food": {"openai": {"model": "gpt-4"}},
-                    "ai": {"openai": {"model": "gpt-4"}},
-                    "sudostar": {"openai": {"model": "gpt-4"}}
-                }
-            }
-            
             expert_system = {
-                'sports': SportsExpert(config),
-                'food': FoodExpert(config),
-                'ai': AIExpert(config),
-                'sudostar': SudoStarExpert(config),
+                'sports': SportsExpert(EXPERT_CONFIG['sports']),
+                'food': FoodExpert(EXPERT_CONFIG['food']),
+                'ai': AIExpert(EXPERT_CONFIG['ai']),
+                'sudostar': SudoStarExpert(EXPERT_CONFIG['sudostar']),
                 'selector': ExpertSelector()
             }
             
@@ -97,6 +84,7 @@ def health():
     
     return jsonify(response), 200 if is_initialized else 503
 
+@app.route('/', methods=['POST'])
 @app.route('/ask', methods=['POST'])
 async def ask():
     if not init_app():
@@ -153,6 +141,6 @@ async def ask():
         }), 500
 
 if __name__ == '__main__':
-    port = int(os.getenv('PORT', 5000))
+    port = int(os.environ.get('PORT', 5000))
     logger.info(f"Starting Flask app on port {port}")
     app.run(host='0.0.0.0', port=port) 

@@ -1,73 +1,80 @@
-from typing import Any, Optional
+"""Cache utility for storing responses"""
 import time
-from collections import OrderedDict
+from typing import Dict, Any, Optional
 
 class Cache:
-    def __init__(self, enabled: bool = True, max_size: int = 1000, ttl: int = 3600):
+    """Simple in-memory cache with TTL support"""
+    
+    def __init__(self, enabled: bool = True, ttl: int = 3600):
         """Initialize cache
         
         Args:
-            enabled (bool): Whether caching is enabled
-            max_size (int): Maximum number of items to store
-            ttl (int): Time to live in seconds
+            enabled (bool, optional): Whether caching is enabled. Defaults to True.
+            ttl (int, optional): Time to live in seconds. Defaults to 3600 (1 hour).
         """
         self.enabled = enabled
-        self.max_size = max_size
         self.ttl = ttl
-        self.cache = OrderedDict()  # {key: (value, timestamp)}
+        self._cache: Dict[str, Dict[str, Any]] = {}
         
-    def get(self, key: str) -> Optional[Any]:
-        """Get value from cache
+    def get(self, key: str) -> Optional[str]:
+        """Get value from cache if not expired
         
         Args:
             key (str): Cache key
             
         Returns:
-            Optional[Any]: Cached value or None if not found/expired
+            Optional[str]: Cached value or None if expired/not found
         """
         if not self.enabled:
             return None
             
-        if key not in self.cache:
+        if key not in self._cache:
             return None
             
-        value, timestamp = self.cache[key]
-        
-        # Check if expired
-        if time.time() - timestamp > self.ttl:
-            del self.cache[key]
+        cache_data = self._cache[key]
+        if time.time() - cache_data['timestamp'] > self.ttl:
+            del self._cache[key]
             return None
             
-        # Move to end (most recently used)
-        self.cache.move_to_end(key)
+        return cache_data['value']
         
-        return value
-        
-    def set(self, key: str, value: Any) -> None:
-        """Set value in cache
+    def set(self, key: str, value: str) -> None:
+        """Set value in cache with current timestamp
         
         Args:
             key (str): Cache key
-            value (Any): Value to cache
+            value (str): Value to cache
         """
         if not self.enabled:
             return
             
-        # Remove oldest if at max size
-        if len(self.cache) >= self.max_size:
-            self.cache.popitem(last=False)
-            
-        self.cache[key] = (value, time.time())
+        self._cache[key] = {
+            'value': value,
+            'timestamp': time.time()
+        }
         
     def clear(self) -> None:
-        """Clear all cached items"""
-        self.cache.clear()
+        """Clear all cached values"""
+        self._cache.clear()
         
     def remove(self, key: str) -> None:
-        """Remove item from cache
+        """Remove specific key from cache
         
         Args:
             key (str): Cache key to remove
         """
-        if key in self.cache:
-            del self.cache[key] 
+        if key in self._cache:
+            del self._cache[key]
+            
+    def cleanup(self) -> None:
+        """Remove all expired entries"""
+        if not self.enabled:
+            return
+            
+        current_time = time.time()
+        expired_keys = [
+            key for key, data in self._cache.items()
+            if current_time - data['timestamp'] > self.ttl
+        ]
+        for key in expired_keys:
+            del self._cache[key] 

@@ -1,36 +1,31 @@
-from typing import List, Dict
+"""Search queries for SudoStar expert"""
 
 SEARCH_QUERIES = {
-    "general": [
-        "SudoStar app features and capabilities",
-        "SudoStar social media automation",
-        "SudoStar content generation AI",
-        "SudoStar app reviews and ratings",
-        "How to use SudoStar for social media"
+    "pricing": [
+        "SudoStar elmas fiyatları",
+        "SudoStar diamond prices",
+        "SudoStar ödeme sistemi",
+        "SudoStar minimum çekim"
     ],
-    "technical": [
-        "SudoStar API documentation",
-        "SudoStar system requirements",
-        "SudoStar integration guides",
-        "SudoStar security features",
-        "SudoStar performance metrics"
+    "features": [
+        "SudoStar özellikleri",
+        "SudoStar nasıl kullanılır",
+        "SudoStar app features"
     ],
-    "comparison": [
-        "SudoStar vs other social media managers",
-        "SudoStar alternatives comparison",
-        "Best features of SudoStar",
-        "SudoStar pricing comparison"
-    ],
-    "troubleshooting": [
-        "SudoStar common issues",
-        "SudoStar error solutions",
-        "SudoStar setup guide",
-        "SudoStar connection problems"
+    "payment": [
+        "SudoStar para çekme",
+        "SudoStar ödeme yöntemleri",
+        "SudoStar payment methods"
     ]
 }
 
-def get_search_queries() -> Dict[str, List[str]]:
-    return SEARCH_QUERIES
-
-def get_queries_by_category(category: str) -> List[str]:
-    return SEARCH_QUERIES.get(category, []) 
+def get_search_queries(query_type: str) -> list:
+    """Get search queries by type
+    
+    Args:
+        query_type (str): Type of queries to get
+        
+    Returns:
+        list: List of search queries
+    """
+    return SEARCH_QUERIES.get(query_type, []) 

@@ -1,47 +1,56 @@
-"""OpenAI API client"""
+"""OpenAI API client wrapper"""
 import os
 import logging
 from typing import Optional
-from openai import OpenAI
-
-logger = logging.getLogger(__name__)
+from openai import OpenAI, AsyncOpenAI
 
 class OpenAIClient:
-    """OpenAI API client"""
+    """OpenAI API client wrapper"""
     
-    def __init__(self):
-        """Initialize OpenAI client"""
+    def __init__(self, model: str = 'gpt-4', max_tokens: int = 300, temperature: float = 0.7):
+        """Initialize OpenAI client
+        
+        Args:
+            model (str, optional): Model to use. Defaults to 'gpt-4'.
+            max_tokens (int, optional): Maximum tokens to generate. Defaults to 300.
+            temperature (float, optional): Temperature for response generation. Defaults to 0.7.
+        """
+        self.logger = logging.getLogger(__name__)
+        
         api_key = os.getenv('OPENAI_API_KEY')
         if not api_key:
-            logger.error("OPENAI_API_KEY not found!")
             raise ValueError("OPENAI_API_KEY environment variable is not set")
-        self.client = OpenAI(api_key=api_key)
-        logger.info("OpenAI client initialized successfully")
+            
+        self.client = AsyncOpenAI(api_key=api_key)
+        self.model = model
+        self.max_tokens = max_tokens
+        self.temperature = temperature
         
-    async def get_completion(self, system_prompt: str, user_prompt: str = None) -> Optional[str]:
+        self.logger.info("OpenAI client initialized successfully")
+        
+    async def get_completion(self, system_prompt: str, user_prompt: str) -> Optional[str]:
         """Get completion from OpenAI API
         
         Args:
-            system_prompt (str): System prompt
-            user_prompt (str, optional): User prompt. Defaults to None.
+            system_prompt (str): System prompt to guide response
+            user_prompt (str): User prompt to generate response for
             
         Returns:
-            Optional[str]: Generated response or None if error
+            Optional[str]: Generated response or None if failed
         """
         try:
-            messages = [{"role": "system", "content": system_prompt}]
-            if user_prompt:
-                messages.append({"role": "user", "content": user_prompt})
-                
-            response = self.client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=messages,
-                temperature=0.7,
-                max_tokens=500
+            response = await self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ],
+                max_tokens=self.max_tokens,
+                temperature=self.temperature
             )
             
-            return response.choices[0].message.content.strip()
+            return response.choices[0].message.content
             
         except Exception as e:
-            logger.error(f"OpenAI API error: {str(e)}")
+            self.logger.error(f"Error getting completion: {str(e)}")
             return None 

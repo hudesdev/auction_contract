@@ -1,50 +1,90 @@
-"""Web search client using Tavily API"""
-import os
+"""Web search utility"""
 import logging
-from typing import List, Optional
+import os
+from typing import List, Optional, Dict, Any
+import aiohttp
 from tavily import TavilyClient
-
-logger = logging.getLogger(__name__)
 
 class WebSearchClient:
     """Web search client using Tavily API"""
     
-    def __init__(self):
-        """Initialize web search client"""
+    def __init__(self, max_results: int = 5, search_depth: str = 'advanced'):
+        """Initialize web search client
+        
+        Args:
+            max_results (int, optional): Maximum number of results to return. Defaults to 5.
+            search_depth (str, optional): Search depth level. Defaults to 'advanced'.
+        """
+        self.logger = logging.getLogger(__name__)
+        
         api_key = os.getenv('TAVILY_API_KEY')
         if not api_key:
-            logger.error("TAVILY_API_KEY not found!")
             raise ValueError("TAVILY_API_KEY environment variable is not set")
+            
         self.client = TavilyClient(api_key=api_key)
-        logger.info("Web search client initialized successfully")
+        self.max_results = max_results
+        self.search_depth = search_depth
         
-    async def search(self, query: str, max_results: int = 3) -> Optional[List[str]]:
+        self.logger.info("Web search client initialized successfully")
+        
+    async def search(self, query: str) -> Optional[str]:
         """Perform web search
         
         Args:
             query (str): Search query
-            max_results (int, optional): Maximum number of results. Defaults to 3.
             
         Returns:
-            Optional[List[str]]: List of search results or None if error
+            Optional[str]: Search results summary or None if failed
         """
         try:
-            # Perform search
-            response = self.client.search(
+            response = await self.client.search(
                 query=query,
-                search_depth="advanced",
-                max_results=max_results
+                max_results=self.max_results,
+                search_depth=self.search_depth
             )
             
-            # Extract content from results
-            results = []
-            for result in response.get('results', []):
-                content = result.get('content')
-                if content:
-                    results.append(content)
+            if not response or 'results' not in response:
+                return None
+                
+            # Extract relevant information from results
+            results = response['results']
+            if not results:
+                return None
+                
+            # Combine titles and snippets
+            summary = []
+            for result in results:
+                title = result.get('title', '')
+                snippet = result.get('snippet', '')
+                if title and snippet:
+                    summary.append(f"{title}: {snippet}")
                     
-            return results if results else None
+            return "\n\n".join(summary) if summary else None
             
         except Exception as e:
-            logger.error(f"Web search error: {str(e)}")
+            self.logger.error(f"Error performing web search: {str(e)}")
+            return None
+
+class WebSearch:
+    """Simple web search client"""
+    
+    def __init__(self):
+        """Initialize web search client"""
+        self.logger = logging.getLogger(__name__)
+        
+    async def search(self, query: str) -> Optional[List[str]]:
+        """Perform web search
+        
+        Args:
+            query (str): Search query
+            
+        Returns:
+            Optional[List[str]]: Search results or None if failed
+        """
+        try:
+            # Burada gerçek bir web araması yapılabilir
+            # Şimdilik sadece query'yi döndürelim
+            return [query]
+        except Exception as e:
+            self.logger.error(f"Error performing web search: {str(e)}")
             return None 
