@@ -7,6 +7,7 @@ from flask_cors import CORS
 from src.experts import SportsExpert, FoodExpert, AIExpert, SudoStarExpert
 from src.experts.selector import ExpertSelector
 from src.utils.openai_client import init_openai
+from config.config import EXPERT_CONFIG
 
 # Configure logging
 logging.basicConfig(
@@ -31,22 +32,36 @@ def init_app():
     try:
         # Initialize OpenAI client
         global openai_api_key
+        logger.info("Initializing OpenAI client...")
         openai_api_key = init_openai()
         if not openai_api_key:
             logger.error("OpenAI API key not found")
             return False
+        logger.info("OpenAI client initialized successfully")
             
         # Initialize experts
         global expert_system
-        expert_system = {
-            'sports': SportsExpert(),
-            'food': FoodExpert(),
-            'ai': AIExpert(),
-            'sudostar': SudoStarExpert()
-        }
+        logger.info("Initializing expert system...")
+        try:
+            expert_system = {
+                'sports': SportsExpert(config=EXPERT_CONFIG['sports']),
+                'food': FoodExpert(config=EXPERT_CONFIG['food']),
+                'ai': AIExpert(config=EXPERT_CONFIG['ai']),
+                'sudostar': SudoStarExpert(config=EXPERT_CONFIG['sudostar'])
+            }
+            logger.info("Experts initialized successfully")
+        except Exception as e:
+            logger.error(f"Error initializing experts: {str(e)}")
+            return False
         
         # Initialize expert selector
-        expert_system['selector'] = ExpertSelector()
+        try:
+            logger.info("Initializing expert selector...")
+            expert_system['selector'] = ExpertSelector()
+            logger.info("Expert selector initialized successfully")
+        except Exception as e:
+            logger.error(f"Error initializing expert selector: {str(e)}")
+            return False
         
         logger.info("Expert system initialized successfully")
         return True
