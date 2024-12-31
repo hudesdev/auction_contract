@@ -4,9 +4,8 @@
         "builder": "NIXPACKS"
     },
     "deploy": {
-        "startCommand": "python src/telegram_bot.py",
+        "startCommand": "gunicorn app:app",
         "restartPolicyType": "ON_FAILURE",
-        "restartPolicyMaxRetries": 10,
-        "kill_timeout": 10
+        "restartPolicyMaxRetries": 10
     }
 } 
