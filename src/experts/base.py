@@ -2,7 +2,7 @@
 from abc import ABC, abstractmethod
 import logging
 
-class BaseExpert(ABC):
+class BaseExpert:
     """Base expert class"""
     
     def __init__(self, config=None):
@@ -11,7 +11,7 @@ class BaseExpert(ABC):
         Args:
             config (dict, optional): Expert configuration. Defaults to None.
         """
-        self.config = config or {}
+        self.config = config if config is not None else {}
         self.logger = logging.getLogger(__name__)
         
     @abstractmethod
@@ -24,4 +24,4 @@ class BaseExpert(ABC):
         Returns:
             str: Generated response
         """
-        pass 
+        raise NotImplementedError("Subclasses must implement get_response method") 
