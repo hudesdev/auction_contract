@@ -1,8 +1,6 @@
 """Base expert module"""
-import logging
 from abc import ABC, abstractmethod
-
-logger = logging.getLogger(__name__)
+import logging
 
 class BaseExpert(ABC):
     """Base expert class"""
