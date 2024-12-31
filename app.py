@@ -1,16 +1,17 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+"""Main application module"""
 import os
 import logging
-from dotenv import load_dotenv
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+
 from src.experts import SportsExpert, FoodExpert, AIExpert, SudoStarExpert
-from src.core.expert_selector import ExpertSelector
-from config.config import EXPERT_CONFIG, APP_CONFIG
+from src.experts.selector import ExpertSelector
+from src.utils.openai_client import init_openai
 
 # Configure logging
 logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
 
@@ -18,53 +19,41 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 CORS(app)
 
-# Global variables
-openai_api_key = None
-expert_system = None
+# Initialize expert system
+expert_system = {}
 
 def init_app():
-    """Initialize the application and its dependencies"""
-    global openai_api_key, expert_system
+    """Initialize application
     
+    Returns:
+        bool: True if initialization successful, False otherwise
+    """
     try:
-        # Load environment variables
-        load_dotenv()
-        
-        # Get OpenAI API key
-        openai_api_key = os.getenv('OPENAI_API_KEY')
+        # Initialize OpenAI client
+        global openai_api_key
+        openai_api_key = init_openai()
         if not openai_api_key:
-            logger.warning("OPENAI_API_KEY environment variable is not set")
+            logger.error("OpenAI API key not found")
             return False
             
-        # Initialize expert system only if needed
-        if expert_system is None:
-            expert_system = {
-                'sports': SportsExpert(EXPERT_CONFIG['sports']),
-                'food': FoodExpert(EXPERT_CONFIG['food']),
-                'ai': AIExpert(EXPERT_CONFIG['ai']),
-                'sudostar': SudoStarExpert(EXPERT_CONFIG['sudostar']),
-                'selector': ExpertSelector()
-            }
-            
-            logger.info("Expert system initialized successfully")
+        # Initialize experts
+        global expert_system
+        expert_system = {
+            'sports': SportsExpert(),
+            'food': FoodExpert(),
+            'ai': AIExpert(),
+            'sudostar': SudoStarExpert()
+        }
+        
+        # Initialize expert selector
+        expert_system['selector'] = ExpertSelector()
+        
+        logger.info("Expert system initialized successfully")
         return True
         
     except Exception as e:
         logger.error(f"Error initializing application: {str(e)}")
         return False
-
-@app.route('/')
-def home():
-    is_initialized = init_app()
-    return jsonify({
-        'status': 'online',
-        'initialized': is_initialized,
-        'version': '1.0.0',
-        'config': {
-            'openai_api': 'configured' if openai_api_key else 'missing',
-            'expert_system': 'running' if expert_system else 'error'
-        }
-    })
 
 @app.route('/health')
 def health():
