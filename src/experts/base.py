@@ -1,27 +1,14 @@
 """Base expert module"""
-from abc import ABC, abstractmethod
 import logging
 
 class BaseExpert:
-    """Base expert class"""
-    
-    def __init__(self, config=None):
-        """Initialize base expert
-        
-        Args:
-            config (dict, optional): Expert configuration. Defaults to None.
-        """
-        self.config = config if config is not None else {}
+    def __init__(self):
         self.logger = logging.getLogger(__name__)
+        self.config = {}
         
-    @abstractmethod
+    def set_config(self, config):
+        if config is not None:
+            self.config = config
+        
     async def get_response(self, question: str) -> str:
-        """Get response from expert
-        
-        Args:
-            question (str): Question to answer
-            
-        Returns:
-            str: Generated response
-        """
         raise NotImplementedError("Subclasses must implement get_response method") 
