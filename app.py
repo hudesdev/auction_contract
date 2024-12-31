@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 from src.experts import SportsExpert, FoodExpert, AIExpert, SudoStarExpert
 from src.core.expert_selector import ExpertSelector
 from src.utils.config import ConfigLoader
-from src.telegram_bot import TelegramBot
 
 # Load environment variables
 load_dotenv()
@@ -15,24 +14,38 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-# Initialize expert system
-config = ConfigLoader.load_config()
-sports_expert = SportsExpert(config)
-food_expert = FoodExpert(config)
-ai_expert = AIExpert(config)
-sudostar_expert = SudoStarExpert(config)
-expert_selector = ExpertSelector()
+try:
+    # Initialize expert system
+    config = ConfigLoader.load_config()
+    sports_expert = SportsExpert(config)
+    food_expert = FoodExpert(config)
+    ai_expert = AIExpert(config)
+    sudostar_expert = SudoStarExpert(config)
+    expert_selector = ExpertSelector()
+except Exception as e:
+    print(f"Error initializing expert system: {str(e)}")
+    # Set default values
+    sports_expert = None
+    food_expert = None
+    ai_expert = None
+    sudostar_expert = None
+    expert_selector = None
 
-# Initialize Telegram bot
-telegram_bot = TelegramBot()
+# Initialize Telegram bot only if TELEGRAM_BOT_TOKEN is set
+if os.getenv("TELEGRAM_BOT_TOKEN"):
+    try:
+        from src.telegram_bot import TelegramBot
+        telegram_bot = TelegramBot()
+        
+        # Start Telegram bot in a separate thread
+        def run_telegram_bot():
+            asyncio.run(telegram_bot.run())
 
-# Start Telegram bot in a separate thread
-def run_telegram_bot():
-    asyncio.run(telegram_bot.run())
-
-import threading
-telegram_thread = threading.Thread(target=run_telegram_bot, daemon=True)
-telegram_thread.start()
+        import threading
+        telegram_thread = threading.Thread(target=run_telegram_bot, daemon=True)
+        telegram_thread.start()
+    except Exception as e:
+        print(f"Error starting Telegram bot: {str(e)}")
 
 @app.route('/')
 def home():
@@ -47,18 +60,28 @@ def home():
 
 @app.route('/health')
 def health():
+    expert_status = 'running' if expert_selector is not None else 'error'
+    telegram_status = 'running' if os.getenv("TELEGRAM_BOT_TOKEN") else 'disabled'
+    
     return jsonify({
         'status': 'healthy',
         'services': {
             'api': 'running',
-            'telegram_bot': 'running',
-            'expert_system': 'running'
+            'telegram_bot': telegram_status,
+            'expert_system': expert_status
         }
     })
 
 @app.route('/ask', methods=['POST'])
 async def ask():
     try:
+        if expert_selector is None:
+            return jsonify({
+                'status': 'error',
+                'error': 'Expert system is not initialized',
+                'code': 'EXPERT_SYSTEM_ERROR'
+            }), 500
+
         data = request.get_json()
         question = data.get('question')
         
@@ -73,13 +96,13 @@ async def ask():
         expert_type, direct_response = await expert_selector.select_expert(question)
         
         if expert_type:
-            if expert_type == "sports":
+            if expert_type == "sports" and sports_expert:
                 response = await sports_expert.get_response(question)
-            elif expert_type == "food":
+            elif expert_type == "food" and food_expert:
                 response = await food_expert.get_response(question)
-            elif expert_type == "ai":
+            elif expert_type == "ai" and ai_expert:
                 response = await ai_expert.get_response(question)
-            elif expert_type == "sudostar":
+            elif expert_type == "sudostar" and sudostar_expert:
                 response = await sudostar_expert.get_response(question)
             else:
                 response = None
@@ -102,6 +125,7 @@ async def ask():
         })
 
     except Exception as e:
+        print(f"Error in /ask endpoint: {str(e)}")
         return jsonify({
             'status': 'error',
             'error': str(e),
