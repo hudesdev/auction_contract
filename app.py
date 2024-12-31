@@ -3,9 +3,6 @@ from flask_cors import CORS
 import os
 import logging
 from dotenv import load_dotenv
-from src.experts import SportsExpert, FoodExpert, AIExpert, SudoStarExpert
-from src.core.expert_selector import ExpertSelector
-from src.utils.config import ConfigLoader
 
 # Configure logging
 logging.basicConfig(
@@ -14,148 +11,127 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Load environment variables
-load_dotenv()
-
-# Check required environment variables
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-if not OPENAI_API_KEY:
-    logger.error("OPENAI_API_KEY environment variable is not set")
-    raise ValueError("OPENAI_API_KEY environment variable is required")
-
 # Initialize Flask app
 app = Flask(__name__)
 CORS(app)
 
-# Initialize expert system
-try:
-    logger.info("Initializing expert system...")
-    config = ConfigLoader.load_config()
+# Global variables
+openai_api_key = None
+expert_system = None
+
+def init_app():
+    """Initialize the application and its dependencies"""
+    global openai_api_key, expert_system
     
-    # Validate config
-    if not config.get('api_keys', {}).get('openai'):
-        raise ValueError("OpenAI API key is missing in config")
-    
-    sports_expert = SportsExpert(config)
-    food_expert = FoodExpert(config)
-    ai_expert = AIExpert(config)
-    sudostar_expert = SudoStarExpert(config)
-    expert_selector = ExpertSelector()
-    logger.info("Expert system initialized successfully")
-except Exception as e:
-    logger.error(f"Error initializing expert system: {str(e)}")
-    sports_expert = None
-    food_expert = None
-    ai_expert = None
-    sudostar_expert = None
-    expert_selector = None
+    try:
+        # Load environment variables
+        load_dotenv()
+        
+        # Get OpenAI API key
+        openai_api_key = os.getenv('OPENAI_API_KEY')
+        if not openai_api_key:
+            logger.warning("OPENAI_API_KEY environment variable is not set")
+            return False
+            
+        # Initialize expert system only if needed
+        if expert_system is None:
+            from src.experts import SportsExpert, FoodExpert, AIExpert, SudoStarExpert
+            from src.core.expert_selector import ExpertSelector
+            from src.utils.config import ConfigLoader
+            
+            config = {
+                "api_keys": {
+                    "openai": openai_api_key
+                },
+                "experts": {
+                    "sports": {"openai": {"model": "gpt-4"}},
+                    "food": {"openai": {"model": "gpt-4"}},
+                    "ai": {"openai": {"model": "gpt-4"}},
+                    "sudostar": {"openai": {"model": "gpt-4"}}
+                }
+            }
+            
+            expert_system = {
+                'sports': SportsExpert(config),
+                'food': FoodExpert(config),
+                'ai': AIExpert(config),
+                'sudostar': SudoStarExpert(config),
+                'selector': ExpertSelector()
+            }
+            
+            logger.info("Expert system initialized successfully")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Error initializing application: {str(e)}")
+        return False
 
 @app.route('/')
 def home():
-    api_key_status = 'configured' if OPENAI_API_KEY else 'missing'
-    expert_status = 'running' if expert_selector is not None else 'error'
-    
+    is_initialized = init_app()
     return jsonify({
         'status': 'online',
+        'initialized': is_initialized,
         'version': '1.0.0',
         'config': {
-            'openai_api': api_key_status,
-            'expert_system': expert_status
-        },
-        'endpoints': {
-            'ask': '/ask (POST) - Get expert response',
-            'health': '/health (GET) - Check system health'
+            'openai_api': 'configured' if openai_api_key else 'missing',
+            'expert_system': 'running' if expert_system else 'error'
         }
     })
 
 @app.route('/health')
 def health():
-    api_key_status = 'configured' if OPENAI_API_KEY else 'missing'
-    expert_status = 'running' if expert_selector is not None else 'error'
-    
-    is_healthy = OPENAI_API_KEY is not None and expert_selector is not None
+    is_initialized = init_app()
     
     response = {
-        'status': 'healthy' if is_healthy else 'unhealthy',
+        'status': 'healthy' if is_initialized else 'unhealthy',
         'services': {
             'api': 'running',
-            'telegram_bot': 'disabled',
-            'expert_system': expert_status,
-            'openai_api': api_key_status
-        },
-        'error': None if is_healthy else 'OpenAI API key is missing or expert system failed to initialize'
+            'openai_api': 'configured' if openai_api_key else 'missing',
+            'expert_system': 'running' if expert_system else 'error'
+        }
     }
     
-    logger.info(f"Health check: {response}")
-    return jsonify(response), 200 if is_healthy else 503
+    if not is_initialized:
+        response['error'] = 'System not properly initialized'
+    
+    return jsonify(response), 200 if is_initialized else 503
 
 @app.route('/ask', methods=['POST'])
 async def ask():
+    if not init_app():
+        return jsonify({
+            'status': 'error',
+            'error': 'System not properly initialized',
+            'code': 'INIT_ERROR'
+        }), 503
+
     try:
-        if not OPENAI_API_KEY:
-            error_msg = 'OpenAI API key is not configured'
-            logger.error(error_msg)
-            return jsonify({
-                'status': 'error',
-                'error': error_msg,
-                'code': 'API_KEY_MISSING'
-            }), 503
-            
-        if expert_selector is None:
-            error_msg = 'Expert system is not initialized'
-            logger.error(error_msg)
-            return jsonify({
-                'status': 'error',
-                'error': error_msg,
-                'code': 'EXPERT_SYSTEM_ERROR'
-            }), 500
-
         data = request.get_json()
-        if not data:
-            error_msg = 'No JSON data received'
-            logger.error(error_msg)
+        if not data or 'question' not in data:
             return jsonify({
                 'status': 'error',
-                'error': error_msg,
-                'code': 'NO_DATA'
-            }), 400
-
-        question = data.get('question')
-        if not question:
-            error_msg = 'Question is required'
-            logger.error(error_msg)
-            return jsonify({
-                'status': 'error',
-                'error': error_msg,
+                'error': 'Question is required',
                 'code': 'MISSING_QUESTION'
             }), 400
 
+        question = data['question']
         logger.info(f"Received question: {question}")
         
         # Select expert and get response
-        expert_type, direct_response = await expert_selector.select_expert(question)
+        expert_type, direct_response = await expert_system['selector'].select_expert(question)
         logger.info(f"Selected expert: {expert_type}")
         
-        if expert_type:
-            if expert_type == "sports" and sports_expert:
-                response = await sports_expert.get_response(question)
-            elif expert_type == "food" and food_expert:
-                response = await food_expert.get_response(question)
-            elif expert_type == "ai" and ai_expert:
-                response = await ai_expert.get_response(question)
-            elif expert_type == "sudostar" and sudostar_expert:
-                response = await sudostar_expert.get_response(question)
-            else:
-                response = None
+        response = None
+        if expert_type and expert_type in expert_system:
+            response = await expert_system[expert_type].get_response(question)
         else:
             response = direct_response
 
         if not response:
-            error_msg = 'Could not generate response'
-            logger.error(error_msg)
             return jsonify({
                 'status': 'error',
-                'error': error_msg,
+                'error': 'Could not generate response',
                 'code': 'NO_RESPONSE'
             }), 500
 
@@ -169,11 +145,10 @@ async def ask():
         })
 
     except Exception as e:
-        error_msg = f"Error in /ask endpoint: {str(e)}"
-        logger.error(error_msg)
+        logger.error(f"Error in /ask endpoint: {str(e)}")
         return jsonify({
             'status': 'error',
-            'error': error_msg,
+            'error': str(e),
             'code': 'INTERNAL_ERROR'
         }), 500
 
