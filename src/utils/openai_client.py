@@ -1,56 +1,56 @@
-"""OpenAI API client wrapper"""
+"""OpenAI client module"""
 import os
 import logging
-from typing import Optional
 from openai import OpenAI, AsyncOpenAI
 
-class OpenAIClient:
-    """OpenAI API client wrapper"""
+logger = logging.getLogger(__name__)
+
+def init_openai():
+    """Initialize OpenAI API key
     
-    def __init__(self, model: str = 'gpt-4', max_tokens: int = 300, temperature: float = 0.7):
-        """Initialize OpenAI client
-        
-        Args:
-            model (str, optional): Model to use. Defaults to 'gpt-4'.
-            max_tokens (int, optional): Maximum tokens to generate. Defaults to 300.
-            temperature (float, optional): Temperature for response generation. Defaults to 0.7.
-        """
-        self.logger = logging.getLogger(__name__)
-        
-        api_key = os.getenv('OPENAI_API_KEY')
-        if not api_key:
-            raise ValueError("OPENAI_API_KEY environment variable is not set")
+    Returns:
+        str: OpenAI API key or None if not found
+    """
+    api_key = os.getenv('OPENAI_API_KEY')
+    if not api_key:
+        logger.error('OPENAI_API_KEY not found in environment variables')
+        return None
+    return api_key
+
+class OpenAIClient:
+    """OpenAI client class"""
+    
+    def __init__(self):
+        """Initialize OpenAI client"""
+        self.api_key = init_openai()
+        if not self.api_key:
+            logger.warning('OpenAI client initialized without API key')
+        else:
+            self.client = AsyncOpenAI(api_key=self.api_key)
+            logger.info('OpenAI client initialized successfully')
             
-        self.client = AsyncOpenAI(api_key=api_key)
-        self.model = model
-        self.max_tokens = max_tokens
-        self.temperature = temperature
-        
-        self.logger.info("OpenAI client initialized successfully")
-        
-    async def get_completion(self, system_prompt: str, user_prompt: str) -> Optional[str]:
-        """Get completion from OpenAI API
+    async def chat_completion(self, messages: list) -> str:
+        """Get chat completion from OpenAI
         
         Args:
-            system_prompt (str): System prompt to guide response
-            user_prompt (str): User prompt to generate response for
+            messages (list): List of message dictionaries
             
         Returns:
-            Optional[str]: Generated response or None if failed
+            str: Generated response
         """
         try:
+            if not self.api_key:
+                return "OpenAI API key not configured"
+                
             response = await self.client.chat.completions.create(
-                model=self.model,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
-                max_tokens=self.max_tokens,
-                temperature=self.temperature
+                model="gpt-4",
+                messages=messages,
+                temperature=0.7,
+                max_tokens=500
             )
             
             return response.choices[0].message.content
             
         except Exception as e:
-            self.logger.error(f"Error getting completion: {str(e)}")
+            logger.error(f'Error in chat completion: {str(e)}')
             return None 
