@@ -1,23 +1,23 @@
 # Twitter Bot
 
-Bu bot, Twitter'da mention'lara ve tweet yanıtlarına otomatik olarak cevap veren bir AI asistanıdır.
+This bot is an AI assistant that automatically responds to mentions and tweet replies on Twitter.
 
-## Özellikler
+## Features
 
-- Mention'lara otomatik yanıt verme
-- Tweet'lere gelen yorumlara otomatik yanıt verme
-- OpenAI GPT-3.5 ile akıllı yanıtlar oluşturma
-- Rate limiting ve günlük tweet limiti kontrolü
-- Detaylı loglama sistemi
+- Automatic reply to mentions
+- Automatic reply to comments on tweets
+- Creating smart replies with OpenAI GPT-3.5
+- Rate limiting and daily tweet limit control
+- Detailed logging system
 
-## Kurulum
+## Installation
 
-1. Gerekli paketleri yükleyin:
+1. Install the required packages:
 ```bash
 pip install -r requirements.txt
 ```
 
-2. `.env` dosyasını oluşturun ve aşağıdaki değişkenleri ekleyin:
+2. Create the `.env` file and add the following variables:
 ```
 TWITTER_API_KEY=your_api_key
 TWITTER_API_SECRET=your_api_secret
@@ -27,18 +27,18 @@ TWITTER_BEARER_TOKEN=your_bearer_token
 OPENAI_API_KEY=your_openai_api_key
 ```
 
-## Kullanım
+## Usage
 
-Programı başlatmak için:
+To start the program:
 ```bash
 python main.py
 ```
 
-İki mod arasında seçim yapabilirsiniz:
-1. Mention'lara otomatik yanıt verme
-2. Tweet'lere gelen yorumlara otomatik yanıt verme
+You can choose between two modes:
+1. Automatically respond to mentions
+2. Automatically respond to comments on tweets
 
-## Proje Yapısı
+## Project Structure
 
 ```
 .
@@ -57,12 +57,12 @@ python main.py
 └── requirements.txt    # Gerekli paketler
 ```
 
-## Güvenlik
+## Security
 
-- API anahtarları `.env` dosyasında güvenli bir şekilde saklanır
-- Rate limiting ile API kullanımı kontrol edilir
-- Günlük tweet limiti ile aşırı kullanım engellenir
+- API keys are securely stored in `.env` file
+- API usage is controlled with rate limiting
+- Excessive usage is prevented with daily tweet limit
 
-## Lisans
+## License
 
 MIT 
