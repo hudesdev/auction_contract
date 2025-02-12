@@ -3,7 +3,7 @@
 This bot is an AI assistant that automatically responds to mentions and tweet replies on Twitter.
 ## Contact
 
-Twitter: https://x.com/HudesDev
+Telegram: https://t.me/m4rcu5sol
 
 ## Features
 
